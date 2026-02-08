@@ -1,0 +1,22 @@
+[
+  {
+    "title": "QTs & Cuties @ Fiction Beer Company! (no event links)",
+    "date": "2026-02-24",
+    "signupTime": "5:30 PM",
+    "performanceTime": "6:00 PM",
+    "eventType": "Open Mic",
+    "location": "Fiction Beer Company, 7101 E Colfax Ave, Denver, CO 80220",
+    "eventbriteLink": "https://www.eventbrite.com/e/example-event-3",
+    "facebookLink": "https://www.facebook.com/events/example3"
+  },
+  {
+    "title": "QTs & Cuties @ Alamo Drafthouse (Sloan's Lake)!",
+    "date": "2026-03-03",
+    "signupTime": "6:00 PM",
+    "performanceTime": "6:30 PM",
+    "eventType": "Open Mic",
+    "location": "Alamo Drafthouse Sloan's Lake, 4255 W Colfax Ave, Denver, CO 80204",
+    "eventbriteLink": "https://www.eventbrite.com/e/example-event-4",
+    "facebookLink": "https://www.facebook.com/events/example4"
+  }
+]
