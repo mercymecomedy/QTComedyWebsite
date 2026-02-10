@@ -10,13 +10,14 @@
     "facebookLink": "https://www.facebook.com/share/18bwJYtK2j/"
   },
   {
-    "title": "QTs & Cuties @ Alamo Drafthouse (Sloan's Lake)! (links to come soon)",
-    "date": "2026-03-03",
-    "signupTime": "6:00 PM",
-    "performanceTime": "6:30 PM",
-    "eventType": "Open Mic",
-    "location": "Alamo Drafthouse Sloan's Lake, 4255 W Colfax Ave, Denver, CO 80204",
-    "eventbriteLink": "https://www.eventbrite.com/e/example-event-4",
-    "facebookLink": "https://www.facebook.com/events/example4"
+    "__comment": "This event is ignored by the program because of the key names",
+    "__title": "QTs & Cuties @ Alamo Drafthouse (Sloan's Lake)! (links to come soon)",
+    "__date": "2026-03-03",
+    "__signupTime": "6:00 PM",
+    "__performanceTime": "6:30 PM",
+    "__eventType": "Open Mic",
+    "__location": "Alamo Drafthouse Sloan's Lake, 4255 W Colfax Ave, Denver, CO 80204",
+    "__eventbriteLink": "https://www.eventbrite.com/e/example-event-4",
+    "__facebookLink": "https://www.facebook.com/events/example4"
   }
 ]
