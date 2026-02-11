@@ -149,7 +149,7 @@ function createEventCard(event) {
     linksHTML += `<a href="${event.eventbriteLink}" target="_blank" rel="noopener noreferrer" class="event-link eventbrite">Eventbrite</a>`;
   }
   if (event.facebookLink) {
-    linksHTML += `<a href="${event.facebookLink}" target="_blank" rel="noopener noreferrer" class="event-link facebook">Facebook Event</a>`;
+    linksHTML += `<a href="${event.facebookLink}" target="_blank" rel="noopener noreferrer" class="event-link facebook">Facebook</a>`;
   }
 
   // Build time display
