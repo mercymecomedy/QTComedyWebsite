@@ -184,19 +184,30 @@ function downloadIcs(eventJson) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  const raw = (event.title || "event").trim();
-  const slug = raw
-    .replace(/[^a-zA-Z0-9\s]/g, "")   // remove punctuation/symbols (not spaces)
-    .replace(/\s+/g, "-")             // spaces to single hyphen
-    .replace(/-+/g, "-")              // collapse multiple hyphens
-    .replace(/^-+|-+$/g, "")         // trim hyphens
-    .slice(0, 40) || "event";
-  const datePart = event.date ? `-${event.date}` : "";
-  a.download = `${slug}${datePart}.ics`;
-  a.click();
-  URL.revokeObjectURL(url);
-  // Only show toast on desktop (file downloaded to disk); skip on mobile (often opens calendar app)
-  if (window.innerWidth >= 769) {
+  const isMobile = window.innerWidth < 769;
+
+  if (isMobile) {
+    // On mobile: open the ICS so the OS can offer "Add to Calendar" instead of just downloading
+    a.target = "_blank";
+    a.rel = "noopener";
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  } else {
+    const raw = (event.title || "event").trim();
+    const slug = raw
+      .replace(/[^a-zA-Z0-9\s]/g, "")
+      .replace(/\s+/g, "-")
+      .replace(/-+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 40) || "event";
+    const datePart = event.date ? `-${event.date}` : "";
+    a.download = `${slug}${datePart}.ics`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  // Only show toast on desktop (file downloaded to disk)
+  if (!isMobile) {
     const existing = document.querySelector(".calendar-download-hint");
     if (existing) existing.remove();
     const hint = document.createElement("span");
