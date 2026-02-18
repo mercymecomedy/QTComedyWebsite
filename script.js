@@ -126,6 +126,88 @@ function displayFilteredEvents() {
     .join("");
 }
 
+// Parse time string like "6:00 PM" or "5:30 PM" to { hours, minutes } in 24h
+function parseTimeString(timeStr) {
+  if (!timeStr) return { hours: 18, minutes: 0 };
+  const match = timeStr.trim().match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+  if (!match) return { hours: 18, minutes: 0 };
+  let hours = parseInt(match[1], 10);
+  const minutes = parseInt(match[2], 10);
+  if (match[3].toUpperCase() === "PM" && hours !== 12) hours += 12;
+  if (match[3].toUpperCase() === "AM" && hours === 12) hours = 0;
+  return { hours, minutes };
+}
+
+// Build ICS file content for an event (works on iPhone & Android)
+function buildIcsContent(event) {
+  const [y, m, d] = event.date.split("-").map(Number);
+  const { hours, minutes } = parseTimeString(event.performanceTime || "6:00 PM");
+  const startStr = [y, String(m).padStart(2, "0"), String(d).padStart(2, "0")].join("") +
+    "T" + [String(hours).padStart(2, "0"), String(minutes).padStart(2, "0"), "00"].join("");
+  const startDate = new Date(y, m - 1, d, hours, minutes, 0);
+  const endDate = new Date(startDate.getTime() + 2 * 60 * 60 * 1000);
+  const endStr = endDate.getFullYear() +
+    String(endDate.getMonth() + 1).padStart(2, "0") +
+    String(endDate.getDate()).padStart(2, "0") +
+    "T" + String(endDate.getHours()).padStart(2, "0") +
+    String(endDate.getMinutes()).padStart(2, "0") + "00";
+
+  const title = (event.title || "Comedy Event").replace(/\r?\n/g, " ").replace(/,/g, "\\,");
+  const location = (event.location || "").replace(/\r?\n/g, " ").replace(/,/g, "\\,");
+  const desc = (event.eventType ? event.eventType + ". " : "") + (event.signupTime ? "Signup: " + event.signupTime + ". " : "") + "Show: " + (event.performanceTime || "");
+  const uid = "qt-" + event.date + "-" + startStr + "@qtcomedy";
+
+  const ics = [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//QT Comedy//Events//EN",
+    "CALSCALE:GREGORIAN",
+    "BEGIN:VEVENT",
+    "UID:" + uid,
+    "DTSTART;TZID=America/Denver:" + startStr,
+    "DTEND;TZID=America/Denver:" + endStr,
+    "SUMMARY:" + title,
+    "DESCRIPTION:" + desc.replace(/,/g, "\\,").replace(/;/g, "\\;"),
+    "LOCATION:" + location,
+    "END:VEVENT",
+    "END:VCALENDAR"
+  ].join("\r\n");
+
+  return ics;
+}
+
+// Trigger download of ICS file for "Add to calendar"
+function downloadIcs(eventJson) {
+  const event = typeof eventJson === "string" ? JSON.parse(eventJson) : eventJson;
+  const ics = buildIcsContent(event);
+  const blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  const raw = (event.title || "event").trim();
+  const slug = raw
+    .replace(/[^a-zA-Z0-9\s]/g, "")   // remove punctuation/symbols (not spaces)
+    .replace(/\s+/g, "-")             // spaces to single hyphen
+    .replace(/-+/g, "-")              // collapse multiple hyphens
+    .replace(/^-+|-+$/g, "")         // trim hyphens
+    .slice(0, 40) || "event";
+  const datePart = event.date ? `-${event.date}` : "";
+  a.download = `${slug}${datePart}.ics`;
+  a.click();
+  URL.revokeObjectURL(url);
+  // Only show toast on desktop (file downloaded to disk); skip on mobile (often opens calendar app)
+  if (window.innerWidth >= 769) {
+    const existing = document.querySelector(".calendar-download-hint");
+    if (existing) existing.remove();
+    const hint = document.createElement("span");
+    hint.className = "calendar-download-hint";
+    hint.textContent = "Calendar file downloaded — open it to add to your calendar.";
+    hint.setAttribute("aria-live", "polite");
+    document.body.appendChild(hint);
+    setTimeout(() => hint.remove(), 4000);
+  }
+}
+
 // Create HTML for a single event card
 function createEventCard(event) {
   // Format the date nicely
@@ -143,7 +225,8 @@ function createEventCard(event) {
     ? event.eventType.toLowerCase().replace(/\s+/g, "-")
     : "default";
 
-  // Build event links HTML
+  // Build event links HTML (Add to calendar last)
+  const eventDataAttr = encodeURIComponent(JSON.stringify(event));
   let linksHTML = "";
   if (event.eventbriteLink) {
     linksHTML += `<a href="${event.eventbriteLink}" target="_blank" rel="noopener noreferrer" class="event-link eventbrite">Eventbrite</a>`;
@@ -151,6 +234,7 @@ function createEventCard(event) {
   if (event.facebookLink) {
     linksHTML += `<a href="${event.facebookLink}" target="_blank" rel="noopener noreferrer" class="event-link facebook">Facebook</a>`;
   }
+  linksHTML += `<a href="#" class="event-link calendar add-to-calendar" data-event="${eventDataAttr}" aria-label="Add to calendar">Add to calendar</a>`;
 
   // Build time display
   let timeHTML = "";
@@ -191,6 +275,15 @@ function createEventCard(event) {
         </div>
     `;
 }
+
+// Add to calendar button click (delegated)
+document.addEventListener("click", (e) => {
+  const btn = e.target.closest(".add-to-calendar");
+  if (!btn) return;
+  e.preventDefault();
+  const data = btn.getAttribute("data-event");
+  if (data) downloadIcs(decodeURIComponent(data));
+});
 
 // Load events when the page loads
 document.addEventListener("DOMContentLoaded", loadEvents);

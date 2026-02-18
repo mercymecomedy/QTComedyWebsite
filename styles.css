@@ -465,6 +465,44 @@
     box-shadow: 0 6px 16px rgba(24, 119, 242, 0.4);
   }
   
+  .event-link.calendar {
+    background: linear-gradient(135deg, #2d3748, #1a202c);
+    color: white;
+    box-shadow: 0 4px 12px rgba(45, 55, 72, 0.3);
+  }
+  
+  .event-link.calendar:hover {
+    background: linear-gradient(135deg, #1a202c, #2d3748);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(45, 55, 72, 0.4);
+  }
+  
+  .calendar-download-hint {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 0.75rem 1.25rem;
+    background: var(--bg-dark, #1a202c);
+    color: white;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    animation: calendar-hint-in 0.25s ease;
+  }
+  
+  @keyframes calendar-hint-in {
+    from {
+      opacity: 0;
+      transform: translateX(-50%) translateY(0.5rem);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  }
+  
   .loading {
     text-align: center;
     padding: 3rem;
