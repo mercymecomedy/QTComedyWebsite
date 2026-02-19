@@ -176,47 +176,81 @@ function buildIcsContent(event) {
   return ics;
 }
 
-// Trigger download of ICS file for "Add to calendar"
+// Trigger calendar add for "Add to calendar"
 function downloadIcs(eventJson) {
   const event = typeof eventJson === "string" ? JSON.parse(eventJson) : eventJson;
+  const isMobile = window.innerWidth < 769;
+
+  // On mobile: send to Google Calendar instead of downloading a file
+  if (isMobile) {
+    const [y, m, d] = (event.date || "").split("-").map(Number);
+    if (y && m && d) {
+      const { hours, minutes } = parseTimeString(event.performanceTime || "6:00 PM");
+      const start = new Date(y, m - 1, d, hours, minutes, 0);
+      const end = new Date(start.getTime() + 2 * 60 * 60 * 1000);
+
+      const fmt = (date) => {
+        const yy = date.getFullYear();
+        const mm = String(date.getMonth() + 1).padStart(2, "0");
+        const dd = String(date.getDate()).padStart(2, "0");
+        const hh = String(date.getHours()).padStart(2, "0");
+        const min = String(date.getMinutes()).padStart(2, "0");
+        const ss = "00";
+        return `${yy}${mm}${dd}T${hh}${min}${ss}`;
+      };
+
+      const datesParam = `${fmt(start)}/${fmt(end)}`;
+      const title = encodeURIComponent(event.title || "Comedy Event");
+      const details = encodeURIComponent(
+        ((event.eventType ? event.eventType + ". " : "") +
+          (event.signupTime ? "Signup: " + event.signupTime + ". " : "") +
+          "Show: " +
+          (event.performanceTime || ""))
+      );
+      const location = encodeURIComponent(event.location || "");
+
+      const gcalUrl =
+        `https://www.google.com/calendar/render?action=TEMPLATE` +
+        `&text=${title}` +
+        `&dates=${datesParam}` +
+        (location ? `&location=${location}` : "") +
+        (details ? `&details=${details}` : "") +
+        `&sf=true&output=xml`;
+
+      window.open(gcalUrl, "_blank");
+      return;
+    }
+  }
+
+  // Desktop (or fallback): download ICS file
   const ics = buildIcsContent(event);
   const blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  const isMobile = window.innerWidth < 769;
 
-  if (isMobile) {
-    // On mobile: open the ICS so the OS can offer "Add to Calendar" instead of just downloading
-    a.target = "_blank";
-    a.rel = "noopener";
-    a.click();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
-  } else {
-    const raw = (event.title || "event").trim();
-    const slug = raw
+  const raw = (event.title || "event").trim();
+  const slug =
+    raw
       .replace(/[^a-zA-Z0-9\s]/g, "")
       .replace(/\s+/g, "-")
       .replace(/-+/g, "-")
       .replace(/^-+|-+$/g, "")
       .slice(0, 40) || "event";
-    const datePart = event.date ? `-${event.date}` : "";
-    a.download = `${slug}${datePart}.ics`;
-    a.click();
-    URL.revokeObjectURL(url);
-  }
+  const datePart = event.date ? `-${event.date}` : "";
+  a.download = `${slug}${datePart}.ics`;
+  a.click();
+  URL.revokeObjectURL(url);
 
   // Only show toast on desktop (file downloaded to disk)
-  if (!isMobile) {
-    const existing = document.querySelector(".calendar-download-hint");
-    if (existing) existing.remove();
-    const hint = document.createElement("span");
-    hint.className = "calendar-download-hint";
-    hint.textContent = "Calendar file downloaded — open it to add to your calendar.";
-    hint.setAttribute("aria-live", "polite");
-    document.body.appendChild(hint);
-    setTimeout(() => hint.remove(), 4000);
-  }
+  const existing = document.querySelector(".calendar-download-hint");
+  if (existing) existing.remove();
+  const hint = document.createElement("span");
+  hint.className = "calendar-download-hint";
+  hint.textContent = "Calendar file downloaded — open it to add to your calendar.";
+  hint.setAttribute("aria-live", "polite");
+  document.body.appendChild(hint);
+  setTimeout(() => hint.remove(), 4000);
 }
 
 // Create HTML for a single event card
