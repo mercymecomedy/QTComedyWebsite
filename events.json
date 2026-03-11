@@ -1,16 +1,6 @@
 [
   {
     "title": "QTs & Cuties @ The Pearl!",
-    "date": "2026-03-10",
-    "signupTime": "6:30 PM",
-    "performanceTime": "7:00 PM",
-    "eventType": "Open Mic",
-    "location": "The Pearl, 2195 California St, Denver, CO 80205",
-    "eventbriteLink": "https://www.eventbrite.com/e/qts-cuties-a-comedy-open-mic-safe-space-tickets-1982853938507?aff=oddtdtcreator",
-    "facebookLink": "https://www.facebook.com/share/1HM5Md6UxV/"
-  },
-  {
-    "title": "QTs & Cuties @ The Pearl!",
     "date": "2026-04-14",
     "signupTime": "6:30 PM",
     "performanceTime": "7:00 PM",
@@ -28,5 +18,15 @@
     "location": "The Pearl, 2195 California St, Denver, CO 80205",
     "eventbriteLink": "https://www.eventbrite.com/e/qts-cuties-a-comedy-open-mic-safe-space-tickets-1982853938507?aff=oddtdtcreator",
     "facebookLink": "https://www.facebook.com/share/1C4H5Kwf8T/"
+  },  
+  {
+    "title": "QTs & Cuties @ The Pearl! (pride month edition)",
+    "date": "2026-06-09",
+    "signupTime": "6:30 PM",
+    "performanceTime": "7:00 PM",
+    "eventType": "Open Mic",
+    "location": "The Pearl, 2195 California St, Denver, CO 80205",
+    "eventbriteLink": "https://www.eventbrite.com/e/qts-cuties-a-comedy-open-mic-safe-space-tickets-1982853938507?aff=oddtdtcreator",
+    "facebookLink": "https://www.facebook.com/share/17BDN7GZB8/"
   }
 ]
