@@ -5,8 +5,14 @@
     "signupTime": "6:00 PM",
     "performanceTime": "6:30 PM",
     "eventType": "Open Mic",
-    "location": "TBD",
+    "location": "TBA",
     "eventbriteLink": "https://www.eventbrite.com/e/qts-cuties-a-comedy-open-mic-safe-space-tickets-1982853938507?aff=oddtdtcreator",
     "facebookLink": "https://www.facebook.com/share/1C4H5Kwf8T/"
-  }
+  },
+  {
+    "title": "QTs and Cuties Queer Comedy Showcase"
+    "date": "2026-06-20"
+    "performanceTime": "7:00 PM"
+    "eventType": "Showcase"
+    "location": "TBA"
 ]
