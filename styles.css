@@ -188,7 +188,8 @@
   
   .intro p {
     font-size: 1.125rem;
-    color: #374151;
+    color: #111827;
+    font-weight: 500;
     max-width: 600px;
     margin: 0 auto;
   }
@@ -399,7 +400,8 @@
   }
   
   .event-detail-item span {
-    color: #374151;
+    color: #111827;
+    font-weight: 500;
     flex: none;
     text-align: center;
     word-wrap: break-word;
