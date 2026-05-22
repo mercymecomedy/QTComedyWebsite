@@ -12,18 +12,20 @@
         <div class="container">
             <h1>{{ headerTitle | default(title) }}</h1>
             <nav>
-                {% block nav %}
+                {% if showHomeNav %}
+                <a href="/" class="nav-link">Home</a>
+                {% else %}
                 <a href="/rules/" class="nav-link">Rules</a>
+                {% endif %}
                 <a href="mailto:{{ site.email }}" class="nav-link">Contact</a>
                 <a href="{{ site.instagram }}" target="_blank" rel="noopener noreferrer" class="nav-link">Instagram</a>
-                {% endblock %}
             </nav>
         </div>
     </header>
 
     <main>
         <div class="container">
-            {% block content %}{% endblock %}
+            {{ content | safe }}
         </div>
     </main>
 
@@ -47,8 +49,8 @@
         </div>
     </footer>
 
-    {% block scripts %}
+    {% if includeScripts != false %}
     <script src="/script.js?v={{ buildTime }}"></script>
-    {% endblock %}
+    {% endif %}
 </body>
 </html>

@@ -3,6 +3,7 @@ const fs = require('fs');
 module.exports = function(eleventyConfig) {
   // Passthrough copy for static assets
   eleventyConfig.addPassthroughCopy('styles.css');
+  eleventyConfig.addPassthroughCopy('script.js');
   eleventyConfig.addPassthroughCopy('CNAME');
   eleventyConfig.addPassthroughCopy('_redirects');
   
@@ -18,26 +19,18 @@ module.exports = function(eleventyConfig) {
     });
   });
   
-  // JSON stringify filter for event data attributes
-  eleventyConfig.addFilter('json', (obj) => {
-    return JSON.stringify(obj);
+  // JSON for HTML attributes (single-quoted); escapes &, <, ' only
+  eleventyConfig.addFilter('jsonAttr', (obj) => {
+    return JSON.stringify(obj)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/'/g, '&#39;');
   });
   
   // Replace whitespace filter for CSS classes
   eleventyConfig.addFilter('className', (str) => {
     if (!str) return '';
     return str.toLowerCase().replace(/\s+/g, '-');
-  });
-  
-  // HTML escape filter for safe attribute embedding
-  eleventyConfig.addFilter('escape', (str) => {
-    if (typeof str !== 'string') return str;
-    return str
-      .replace(/&/g, '&amp;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;');
   });
   
   // Read and process events data
@@ -59,15 +52,16 @@ module.exports = function(eleventyConfig) {
     // Validate events
     validateEvents(events);
     
-    // Filter and sort events
-    const today = new Date();
-    today.setUTCHours(0, 0, 0, 0);
+    // Filter past events using local calendar date (YYYY-MM-DD string compare)
+    const now = new Date();
+    const todayStr = [
+      now.getFullYear(),
+      String(now.getMonth() + 1).padStart(2, '0'),
+      String(now.getDate()).padStart(2, '0')
+    ].join('-');
     
     return events
-      .filter(event => {
-        const eventDate = new Date(event.date);
-        return eventDate >= today;
-      })
+      .filter(event => event.date >= todayStr)
       .sort((a, b) => {
         const dateA = new Date(a.date);
         const dateB = new Date(b.date);

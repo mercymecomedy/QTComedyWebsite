@@ -30,6 +30,6 @@
         {% if event.facebookLink %}
         <a href="{{ event.facebookLink }}" target="_blank" rel="noopener noreferrer" class="event-link facebook">Facebook</a>
         {% endif %}
-        <a href="#" class="event-link calendar add-to-calendar" data-event='{{ event | json | escape }}' aria-label="Add to calendar">Add to calendar</a>
+        <a href="#" class="event-link calendar add-to-calendar" data-event='{{ event | jsonAttr | safe }}' aria-label="Add to calendar">Add to calendar</a>
     </div>
 </div>

@@ -1,49 +1,72 @@
-I won't use any more tools. Let me just summarize what's done.
+# Eleventy Build — Handoff (Windows + macOS)
 
-## Status
+Last updated after resuming on **Windows 11** (`feat/implement-build-process_GLM-5`). Kiro completed Phases 1–4 on a MacBook; Phase 5 validation was blocked there when Node/npm were unavailable.
 
-**Implementation complete.** I fixed one bug (missing `escape` filter) and updated the documentation.
+## Current status
 
-## What You Need To Do
+| Phase | Status |
+|-------|--------|
+| 1–4 Setup, templates, JS refactor, docs | Done (Kiro) |
+| 5 Build validation | **Done on Windows** — fixes applied (see below) |
+| 6 Cloudflare deployment | **Your turn** — see `CLOUDFLARE_SETUP.md` |
 
-### 1. Install Node.js 18+
-```bash
-# Check if installed
-node --version
+## Bugs fixed after Kiro (required for a working build)
 
-# If not, install from nodejs.org or use nvm
-nvm install 18 && nvm use 18
+These did not show up until `npm run build` ran on Windows:
+
+1. **YAML front matter** — Titles with `&` or `:` must be quoted in `src/index.njk` and `src/rules/index.njk`.
+2. **Eleventy layouts** — `layout: base.njk` injects page HTML via `{{ content | safe }}`, not Nunjucks `{% block %}`. Layout and pages were updated accordingly.
+3. **`script.js` passthrough** — Added to `eleventy.config.js` so `_site/script.js` exists.
+4. **Calendar `data-event`** — Replaced `json \| escape` with a `jsonAttr` filter + `\| safe` so JSON parses correctly in the browser.
+5. **Past-event filter** — Uses local `YYYY-MM-DD` string compare (consistent across timezones and OS).
+
+## Node.js on Windows
+
+Node was not on PATH in Cursor’s terminal until installed. Options:
+
+- **Installer:** https://nodejs.org/ (LTS). Restart Cursor/terminal after install.
+- **winget:** `winget install OpenJS.NodeJS.LTS`
+- **nvm-windows:** https://github.com/coreybutler/nvm-windows (optional; mirrors Mac `nvm`)
+
+Verify in a **new** terminal:
+
+```powershell
+node --version   # should be >= 18
+npm --version
 ```
 
-### 2. Test Locally
+## Node.js on macOS
+
+```bash
+nvm install    # uses .nvmrc (18)
+nvm use
+node --version
+```
+
+## Commands (both platforms)
+
+From the repo root:
+
 ```bash
 npm install
-npm run dev
-# Open http://localhost:8080
+npm run build
+npm run dev      # http://localhost:8080
 ```
 
-### 3. Deploy to Cloudflare Pages
-Follow the steps in `CLOUDFLARE_SETUP.md`:
-- Build command: `npm run build`
-- Output directory: `_site`
-- Set `NODE_VERSION=18` environment variable
+After changing dependencies on one machine, commit `package-lock.json` so the other gets the same versions.
 
-## Files Created
+## Manual checks still worth doing in a browser
 
-- `package.json` - Node config
-- `eleventy.config.js` - Build config with validation
-- `.nvmrc` - Node version
-- `.gitignore` - Ignore node_modules/_site
-- `src/_layouts/base.njk` - Base layout
-- `src/_includes/event-card.njk` - Event component
-- `src/index.njk` - Homepage
-- `src/rules/index.njk` - Rules page
-- `script.js` - Refactored (filter + calendar only)
-- `README.md` - Full docs
-- `CLOUDFLARE_SETUP.md` - Deployment guide
+- [ ] Filter buttons (All / Open Mic / Showcase)
+- [ ] Add to calendar (desktop ICS download, mobile Google Calendar)
+- [ ] Rules page nav shows **Home** (not Rules); no `script.js` on rules page
 
-## Files Modified
+## Phase 6 — Deploy
 
-- `script.js` - Removed fetch/rendering, kept filter/calendar
+1. Commit and push this branch (or merge to `main`).
+2. Follow `CLOUDFLARE_SETUP.md`: build `npm run build`, output `_site`, `NODE_VERSION=18`.
+3. Confirm preview deploy on a PR before merging.
 
-The spec is complete in `.kiro/specs/eleventy-build-system/`.
+## Legacy root files
+
+`index.html` and `rules/index.html` at the repo root are the **old** static site. The built site lives under `src/` → `_site/`. Cloudflare should use the Eleventy build output only.

@@ -39,16 +39,16 @@ This document tracks the implementation tasks for migrating the QTs & Cuties web
   - Troubleshooting guide
 - [x] Create CLOUDFLARE_SETUP.md with step-by-step setup guide
 
-### Phase 5: Build Validation ⏳
+### Phase 5: Build Validation ✅ (automated) / browser checks optional
 
-**Requires Node.js to be installed on your system.**
+**Validated on Windows 11 (May 2026).** Post-Kiro fixes: YAML quoting, layout `content` injection, `script.js` passthrough, `jsonAttr` calendar data.
 
-- [ ] Install Node.js 18 or higher (`node --version` to verify)
-- [ ] Run `npm install` to install dependencies
-- [ ] Run `npm run build` to verify build succeeds
-- [ ] Run `npm run dev` to verify dev server works
-- [ ] Verify events render correctly in built output (`_site/index.html`)
-- [ ] Verify past events are filtered out
+- [x] Install Node.js 18 or higher (`node --version` to verify)
+- [x] Run `npm install` to install dependencies
+- [x] Run `npm run build` to verify build succeeds
+- [ ] Run `npm run dev` to verify dev server works (local)
+- [x] Verify events render correctly in built output (`_site/index.html`)
+- [x] Verify past events are filtered out (build-time date filter)
 - [ ] Verify filter buttons work correctly in browser
 - [ ] Verify calendar integration works (desktop and mobile)
 
@@ -165,13 +165,13 @@ This document tracks the implementation tasks for migrating the QTs & Cuties web
 
 Before considering the implementation complete:
 
-- [ ] `npm install` succeeds without errors
-- [ ] `npm run build` generates `_site/` directory with:
-  - [ ] `_site/index.html` with pre-rendered events
-  - [ ] `_site/rules/index.html`
-  - [ ] `_site/styles.css`
-  - [ ] `_site/script.js`
-  - [ ] `_site/CNAME`
+- [x] `npm install` succeeds without errors
+- [x] `npm run build` generates `_site/` directory with:
+  - [x] `_site/index.html` with pre-rendered events
+  - [x] `_site/rules/index.html`
+  - [x] `_site/styles.css`
+  - [x] `_site/script.js`
+  - [x] `_site/CNAME`
 - [ ] `npm run dev` starts development server at `localhost:8080`
 - [ ] Events display correctly without JavaScript
 - [ ] Filter buttons work correctly

@@ -6,16 +6,24 @@ A static website for QTs & Cuties comedy events, built with [Eleventy](https://w
 
 ### 1. Install Node.js
 
-This project requires Node.js 18 or higher.
+This project requires Node.js 18 or higher (see `.nvmrc`). Use the same major version on **macOS and Windows** so builds match.
 
-**Option A: Using nvm (recommended)**
+**macOS — nvm (recommended)**
 ```bash
-nvm install 18
-nvm use 18
+nvm install   # reads .nvmrc
+nvm use
 ```
 
-**Option B: Download from nodejs.org**
-Download Node.js 18 LTS from https://nodejs.org/
+**Windows**
+- Installer: [nodejs.org](https://nodejs.org/) (LTS), then restart your terminal or IDE
+- Or: `winget install OpenJS.NodeJS.LTS`
+- Optional: [nvm-windows](https://github.com/coreybutler/nvm-windows) if you want parity with Mac `nvm`
+
+Verify:
+```bash
+node --version
+npm --version
+```
 
 ### 2. Install Dependencies
 
@@ -164,17 +172,26 @@ Dates must be in `YYYY-MM-DD` format, e.g., `"2026-06-05"`.
 - Check that event dates are in the future
 - Verify the date format is correct
 
-### npm install fails
+### npm install fails / `node` not found
 
-Ensure Node.js 18 or higher is installed:
-```bash
-node --version
+- Install Node 18+ (see above) and **open a new terminal** so PATH updates
+- On Windows, if `node` works in PowerShell but not in Cursor, restart Cursor after installing Node
+
+### Build fails on YAML / front matter
+
+Quote titles that contain `&`, `:`, or `|` in template front matter, for example:
+```yaml
+title: "QTs & Cuties: A Comedy Community"
 ```
+
+### Empty homepage after build
+
+Eleventy layouts use `{{ content | safe }}` in `src/_layouts/base.njk`, not `{% block content %}`. Page templates should not wrap body content in blocks when using `layout:` in front matter.
 
 ### Changes not visible after deployment
 
 - Wait 1-2 minutes for Cloudflare to deploy
-- Hard refresh your browser (Cmd+Shift+R on Mac)
+- Hard refresh: Cmd+Shift+R (Mac) or Ctrl+Shift+R (Windows)
 - Check the deployment status in Cloudflare Dashboard
 
 ## Development
