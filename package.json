@@ -1,0 +1,25 @@
+{
+  "name": "qtcomedy-website",
+  "version": "1.0.0",
+  "description": "QTs & Cuties Comedy Community Website",
+  "scripts": {
+    "build": "eleventy && node scripts/validate-build.js",
+    "dev": "eleventy --serve",
+    "preview": "npx serve _site"
+  },
+  "devDependencies": {
+    "@11ty/eleventy": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "comedy",
+    "events",
+    "queer",
+    "trans",
+    "community"
+  ],
+  "author": "QTs & Cuties",
+  "license": "MIT"
+}

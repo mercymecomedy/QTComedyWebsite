@@ -1,0 +1,35 @@
+{# Event card partial - expects 'event' parameter #}
+<div class="event-card" data-event-type="{{ event.eventType | className }}">
+    <div class="event-title">{{ event.title }}</div>
+    <div class="event-date">{{ event.date | formatDate }}</div>
+    <div class="event-type {{ event.eventType | className }}">{{ event.eventType }}</div>
+    <div class="event-details">
+        {% if event.signupTime %}
+        <div class="event-detail-item event-time">
+            <strong>Signup:</strong>
+            <span>{{ event.signupTime }}</span>
+            <span class="time-separator">•</span>
+            <strong>Show:</strong>
+            <span>{{ event.performanceTime }}</span>
+        </div>
+        {% else %}
+        <div class="event-detail-item event-time">
+            <strong>Show:</strong>
+            <span>{{ event.performanceTime }}</span>
+        </div>
+        {% endif %}
+        <div class="event-detail-item">
+            <strong>Location:</strong>
+            <span>{{ event.location }}</span>
+        </div>
+    </div>
+    <div class="event-links">
+        {% if event.eventbriteLink %}
+        <a href="{{ event.eventbriteLink }}" target="_blank" rel="noopener noreferrer" class="event-link eventbrite">Eventbrite</a>
+        {% endif %}
+        {% if event.facebookLink %}
+        <a href="{{ event.facebookLink }}" target="_blank" rel="noopener noreferrer" class="event-link facebook">Facebook</a>
+        {% endif %}
+        <a href="#" class="event-link calendar add-to-calendar" data-event='{{ event | jsonAttr | safe }}' aria-label="Add to calendar">Add to calendar</a>
+    </div>
+</div>

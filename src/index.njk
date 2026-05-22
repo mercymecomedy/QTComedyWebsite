@@ -1,0 +1,27 @@
+---
+layout: base.njk
+title: "QTs & Cuties: A Comedy Community"
+---
+<section class="intro">
+    <p>Join us for our regularly occurring comedy events that are open to all, but particularly geared towards those who identify as queer, trans, and/or women.</p>
+</section>
+
+<section class="events-section">
+    <h2>Upcoming Shows</h2>
+    
+    <div class="event-filters" id="event-filters">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="open-mic">Open Mic</button>
+        <button class="filter-btn" data-filter="showcase">Showcase</button>
+    </div>
+    
+    <div id="events-container" class="events-grid">
+        {% if events.length > 0 %}
+            {% for event in events %}
+                {% include "event-card.njk" %}
+            {% endfor %}
+        {% else %}
+            <div class="no-events">No upcoming events at this time. Check back soon!</div>
+        {% endif %}
+    </div>
+</section>
