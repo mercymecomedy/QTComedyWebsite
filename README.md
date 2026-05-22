@@ -188,6 +188,10 @@ title: "QTs & Cuties: A Comedy Community"
 
 Eleventy layouts use `{{ content | safe }}` in `src/_layouts/base.njk`, not `{% block content %}`. Page templates should not wrap body content in blocks when using `layout:` in front matter.
 
+### Cloudflare preview shows “Loading events…”
+
+The deploy is almost certainly **not** using `_site` as the output directory. See [CLOUDFLARE_SETUP.md](CLOUDFLARE_SETUP.md). The build also runs `scripts/validate-build.js` so a correct Eleventy build must include event cards (or an explicit empty state), not the old loading placeholder.
+
 ### Changes not visible after deployment
 
 - Wait 1-2 minutes for Cloudflare to deploy
