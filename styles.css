@@ -277,6 +277,22 @@
     margin-bottom: 0.75rem;
     font-style: italic;
   }
+
+  .event-date--recurring {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .event-recurring-label {
+    font-style: normal;
+    font-weight: 700;
+    color: #1f2937;
+  }
+
+  .event-next-date {
+    font-style: italic;
+  }
   
   .event-type {
     display: inline-block;
