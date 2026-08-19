@@ -5,7 +5,8 @@
   "scripts": {
     "build": "eleventy && node scripts/validate-build.js",
     "dev": "eleventy --serve",
-    "preview": "npx serve _site"
+    "preview": "npx serve _site",
+    "test": "node scripts/test-recurring.js"
   },
   "devDependencies": {
     "@11ty/eleventy": "^3.0.0"

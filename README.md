@@ -64,8 +64,9 @@ QTComedyWebsite/
 │   ├── _layouts/           # Page layouts
 │   ├── index.njk           # Homepage
 │   └── rules/index.njk     # Rules page
+├── scripts/                # Build/test helpers (recurring logic, post-build checks)
 ├── styles.css              # Stylesheet
-├── script.js               # Client-side JS (filter + calendar)
+├── script.js               # Client-side JS (recurring rollover, filter, calendar)
 ├── _site/                  # Built output (generated, don't edit)
 ├── package.json            # Node.js config
 └── eleventy.config.js      # Eleventy config
@@ -73,34 +74,78 @@ QTComedyWebsite/
 
 ## Editing Events
 
-Events are stored in `events.json` at the project root.
+Events are stored in `events.json` at the project root. Each event is either a
+**single event** (one fixed date) or a **recurring event** (e.g. "1st Wednesday
+of the month"). The two are mutually exclusive: an event has exactly one of
+`date` or `recurring`.
 
 ### Event Fields
 
 | Field | Required | Example |
 |-------|----------|---------|
 | `title` | Yes | `"QTs & Cuties @ Fiction Beer Company"` |
-| `date` | Yes | `"2026-06-05"` (YYYY-MM-DD format) |
 | `eventType` | Yes | `"Open Mic"` or `"Showcase"` |
 | `location` | Yes | `"7101 E Colfax Ave, Denver, CO 80220"` |
 | `performanceTime` | Yes | `"7:00 PM"` |
-| `signupTime` | No | `"6:30 PM"` (usually for Open Mics only) |
 | `eventbriteLink` | Yes | `"https://example.eventbrite.com"` |
+| `signupTime` | No | `"6:30 PM"` (usually for Open Mics only) |
 | `facebookLink` | No | `"https://facebook.com/events/123"` |
+| `date` | Single events only | `"2026-06-05"` (YYYY-MM-DD) |
+| `recurring` | Recurring events only | `{"label": "1st Wednesday of the month", "week": 1, "weekday": 3}` |
 
-### Example Event
+### Single vs. Recurring Events
+
+- **Single event** — set `date` to a fixed `YYYY-MM-DD`. The event is shown
+  until that calendar day ends (visitor's local time), then drops off at the
+  next build.
+- **Recurring event** — set `recurring` instead of `date`. The card shows the
+  human label (e.g. "1st Wednesday of the month!") plus the next concrete date
+  (e.g. "September 2nd"). The next date is recomputed in the visitor's browser
+  using their local date, so it rolls over at the visitor's midnight: at
+  11:59 PM on the event day the card still shows that day; at 12:01 AM the next
+  day it jumps to the following month's occurrence.
+
+### `recurring` object
+
+| Key | Type | Meaning |
+|-----|------|---------|
+| `label` | string | Human description shown on the card, e.g. `"1st Wednesday of the month"`. |
+| `week` | integer | `1`–`5` for the Nth weekday of the month, or `-1` for the last. |
+| `weekday` | integer | `0` = Sunday … `6` = Saturday. |
+
+Months that don't have a 5th occurrence of a given weekday are automatically
+skipped to the next month that does.
+
+### Example Single Event
+
+```json
+{
+  "title": "QTs & Cuties @ Alamo Drafthouse (Sloans Lake)",
+  "date": "2026-08-27",
+  "signupTime": "6:30 PM",
+  "performanceTime": "7:00 PM",
+  "eventType": "Open Mic",
+  "location": "4255 W Colfax Ave, Denver, CO 80204",
+  "eventbriteLink": "https://example.eventbrite.com"
+}
+```
+
+### Example Recurring Event
 
 ```json
 {
   "title": "QTs & Cuties @ Fiction Beer Company",
-  "date": "2026-06-05",
+  "recurring": { "label": "1st Wednesday of the month", "week": 1, "weekday": 3 },
   "signupTime": "6:30 PM",
   "performanceTime": "7:00 PM",
   "eventType": "Open Mic",
   "location": "7101 E Colfax Ave, Denver, CO 80220",
-  "eventbriteLink": "https://QTsMic06-05-26.eventbrite.com"
+  "eventbriteLink": "https://example.eventbrite.com"
 }
 ```
+
+Use one Eventbrite series URL for a recurring event; it is shown for every
+occurrence. Update it in `events.json` when the Eventbrite page changes.
 
 ### Workflow: Update Events via GitHub Web UI
 
@@ -160,17 +205,25 @@ See [CLOUDFLARE_SETUP.md](CLOUDFLARE_SETUP.md) for step-by-step instructions.
 
 ### Build Fails with "missing required field"
 
-Check that all events have the required fields: `title`, `date`, `eventType`, `location`, `performanceTime`, `eventbriteLink`.
+Check that all events have the required fields: `title`, `eventType`, `location`, `performanceTime`, `eventbriteLink`. Each event must also have exactly one of `date` or `recurring`.
 
 ### Build Fails with "invalid date format"
 
-Dates must be in `YYYY-MM-DD` format, e.g., `"2026-06-05"`.
+Single-event dates must be in `YYYY-MM-DD` format, e.g. `"2026-06-05"`. Recurring events use a `recurring` object (`{label, week, weekday}`) instead of `date` — see [Editing Events](#editing-events).
+
+### Build Fails with "must have exactly one of date or recurring"
+
+Each event needs exactly one: a `date` string for a one-off, or a `recurring` object for a repeating event. Remove whichever does not apply.
+
+### Recurring event shows the wrong next date
+
+The next date is recomputed in the visitor's browser from their local date, so it is correct for their timezone. The build-time fallback (shown briefly before JavaScript runs, or for no-JS visitors) uses the build server's clock and may differ around midnight UTC; the client overrides it on load. If the card never updates, check that `data-recurring` is present on the card and that `script.js` loaded.
 
 ### Events Not Showing Up
 
-- Past events are automatically filtered out
-- Check that event dates are in the future
-- Verify the date format is correct
+- Past single events are automatically filtered out at build time.
+- Recurring events always show (they always have a next occurrence).
+- Verify the date format / `recurring` object is correct.
 
 ### npm install fails / `node` not found
 
@@ -207,11 +260,12 @@ The deploy is almost certainly **not** using `_site` as the output directory. Se
 | `npm run dev` | Start dev server with live reload at localhost:8080 |
 | `npm run build` | Build site to `_site/` directory |
 | `npm run preview` | Serve built site locally (run build first) |
+| `npm test` | Run recurring-event helper unit tests (rollover, parity) |
 
 ### How It Works
 
-1. **Build time**: Eleventy reads `events.json`, validates data, filters past events, sorts by date, and generates static HTML
-2. **Client side**: JavaScript handles filtering (show/hide by type) and calendar integration (ICS download or Google Calendar)
+1. **Build time**: Eleventy reads `events.json`, validates data, filters out past single events, computes a build-time next date for recurring events (a no-JS fallback), sorts by date, and generates static HTML
+2. **Client side**: JavaScript recomputes each recurring event's next date in the visitor's local timezone (so it rolls over at their midnight), re-sorts the cards, and handles filtering (show/hide by type) and calendar integration (ICS download or Google Calendar). For recurring events the exported calendar entry uses the computed next date.
 3. **Deployment**: Cloudflare Pages runs `npm run build` and serves the `_site/` directory
 
 ### Cache Busting

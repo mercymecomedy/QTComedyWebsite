@@ -51,21 +51,27 @@ if (rulesHtml.includes(LEGACY_LOADING)) {
   fail('Built rules page still contains legacy loading markup.');
 }
 
-// When events.json has future-dated events, the homepage should list at least one
+// When events.json has upcoming events (single or recurring), the homepage
+// should list at least one. Recurring events are always upcoming (they have
+// a next occurrence), so they count even without a `date` field.
 const eventsPath = path.join(process.cwd(), 'events.json');
 if (fs.existsSync(eventsPath)) {
   const events = JSON.parse(fs.readFileSync(eventsPath, 'utf8'));
   const now = new Date();
-  const todayStr = [
-    now.getFullYear(),
-    String(now.getMonth() + 1).padStart(2, '0'),
-    String(now.getDate()).padStart(2, '0')
-  ].join('-');
-  const upcoming = events.filter((e) => e.date >= todayStr);
+  const todayStr =
+    now.getFullYear() + '-' +
+    String(now.getMonth() + 1).padStart(2, '0') + '-' +
+    String(now.getDate()).padStart(2, '0');
 
-  if (upcoming.length > 0 && !hasEventCards) {
+  const isUpcoming = (e) => {
+    if (e.recurring) return true;
+    return typeof e.date === 'string' && e.date >= todayStr;
+  };
+  const upcomingCount = events.filter(isUpcoming).length;
+
+  if (upcomingCount > 0 && !hasEventCards) {
     fail(
-      `events.json has ${upcoming.length} upcoming event(s) but the built homepage has no event cards. ` +
+      `events.json has ${upcomingCount} upcoming event(s) but the built homepage has no event cards. ` +
         'Check the build date filter and templates.'
     );
   }

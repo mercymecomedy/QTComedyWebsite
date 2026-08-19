@@ -1,7 +1,20 @@
 {# Event card partial - expects 'event' parameter #}
-<div class="event-card" data-event-type="{{ event.eventType | className }}">
+{# Single events use event.date; recurring events use event.recurring and a
+   build-time-computed next date (event._nextDate). script.js recomputes the
+   next date in the visitor's browser timezone and re-sorts all cards. #}
+<div class="event-card{% if event.recurring %} event-card--recurring{% endif %}"
+     data-event-type="{{ event.eventType | className }}"
+     data-sort-date="{{ event._sortDate }}"{% if event.recurring %}
+     data-recurring='{{ event.recurring | jsonAttr | safe }}'{% endif %}>
     <div class="event-title">{{ event.title }}</div>
+    {% if event.recurring %}
+    <div class="event-date event-date--recurring">
+        <span class="event-recurring-label">{{ event.recurring.label }}!</span>
+        <span class="event-next-date">Next: {{ event._nextDate | formatDateOrdinal(event._refYear) }}</span>
+    </div>
+    {% else %}
     <div class="event-date">{{ event.date | formatDate }}</div>
+    {% endif %}
     <div class="event-type {{ event.eventType | className }}">{{ event.eventType }}</div>
     <div class="event-details">
         {% if event.signupTime %}

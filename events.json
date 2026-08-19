@@ -10,7 +10,11 @@
   },
   {
     "title": "QTs & Cuties @ Fiction Beer Company",
-    "date": "2026-09-02",
+    "recurring": {
+      "label": "1st Wednesday of the month",
+      "week": 1,
+      "weekday": 3
+    },
     "signupTime": "6:30 PM",
     "performanceTime": "7:00 PM",
     "eventType": "Open Mic",
