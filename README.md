@@ -64,8 +64,9 @@ QTComedyWebsite/
 │   ├── _layouts/           # Page layouts
 │   ├── index.njk           # Homepage
 │   └── rules/index.njk     # Rules page
+├── scripts/                # Build/test helpers (recurring logic, post-build checks)
 ├── styles.css              # Stylesheet
-├── script.js               # Client-side JS (filter + calendar)
+├── script.js               # Client-side JS (recurring rollover, filter, calendar)
 ├── _site/                  # Built output (generated, don't edit)
 ├── package.json            # Node.js config
 └── eleventy.config.js      # Eleventy config
