@@ -32,7 +32,7 @@ if (indexHtml.includes(LEGACY_LOADING)) {
   );
 }
 
-const hasEventCards = indexHtml.includes('class="event-card"');
+const hasEventCards = /class=["'][^"']*\bevent-card\b[^"']*["']/.test(indexHtml);
 const hasEmptyState = indexHtml.includes('class="no-events"');
 
 if (!hasEventCards && !hasEmptyState) {
