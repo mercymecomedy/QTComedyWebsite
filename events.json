@@ -1,14 +1,5 @@
 [
   {
-    "title": "QTs & Cuties @ Alamo Drafthouse (Sloans Lake)",
-    "date": "2026-08-27",
-    "signupTime": "6:30 PM",
-    "performanceTime": "7:00 PM",
-    "eventType": "Open Mic",
-    "location": "4255 W Colfax Ave, Denver, CO 80204",
-    "eventbriteLink": "https://www.eventbrite.com/e/queerwomens-comedy-open-mic-qts-cuties-tickets-1998393063448?aff=oddtdtcreator"
-  },
-  {
     "title": "QTs & Cuties @ Fiction Beer Company",
     "recurring": {
       "label": "1st Wednesday of the month",
