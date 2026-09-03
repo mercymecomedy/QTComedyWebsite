@@ -1,18 +1,32 @@
 /**
- * Dev server: esbuild watch (JS + CSS into _site/assets/) alongside
+ * Dev server: esbuild watch (JS + CSS + fonts into _site/assets/) alongside
  * Eleventy --serve. Ctrl+C tears down both.
  */
+const fs = require('fs');
+const path = require('path');
 const esbuild = require('esbuild');
 const { spawn } = require('child_process');
-const { jsOptions, cssOptions } = require('./esbuild-config.js');
+const { jsOptions } = require('./esbuild-config.js');
+
+/**
+ * Resolve the Eleventy CLI script. The package's "exports" map hides
+ * cmd.cjs from require.resolve, so locate it via the package root instead.
+ * @returns {string} absolute path to the Eleventy bin script
+ */
+function resolveEleventyBin() {
+  const mainEntry = require.resolve('@11ty/eleventy');
+  const packageRoot = path.resolve(path.dirname(mainEntry), '..');
+  const packageJson = JSON.parse(fs.readFileSync(path.join(packageRoot, 'package.json'), 'utf8'));
+  return path.join(packageRoot, packageJson.bin.eleventy);
+}
 
 async function main() {
-  const jsCtx = await esbuild.context(jsOptions(false));
-  const cssCtx = await esbuild.context(cssOptions(false));
-  await Promise.all([jsCtx.watch(), cssCtx.watch()]);
+  const eleventyBin = resolveEleventyBin();
 
-  // Invoke the Eleventy CLI directly (bin is cmd.cjs in Eleventy 3).
-  const eleventy = spawn(process.execPath, [require.resolve('@11ty/eleventy/cmd.cjs'), '--serve'], {
+  const jsCtx = await esbuild.context(jsOptions(false));
+  await jsCtx.watch();
+
+  const eleventy = spawn(process.execPath, [eleventyBin, '--serve'], {
     stdio: 'inherit',
   });
 
@@ -21,7 +35,7 @@ async function main() {
     if (shuttingDown) return;
     shuttingDown = true;
     eleventy.kill('SIGTERM');
-    Promise.all([jsCtx.dispose(), cssCtx.dispose()]).then(() => process.exit(0));
+    jsCtx.dispose().then(() => process.exit(0));
   };
   process.on('SIGINT', shutdown);
   process.on('SIGTERM', shutdown);

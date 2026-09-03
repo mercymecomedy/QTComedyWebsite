@@ -17,6 +17,12 @@
  * build time) and bundled into this file by esbuild.
  */
 
+// Fonts + stylesheets are imported here so esbuild bundles everything into
+// _site/assets/main.{js,css} with a single entry point.
+import '@fontsource/bricolage-grotesque/700.css';
+import '@fontsource/bricolage-grotesque/800.css';
+import '../css/main.css';
+
 import { nextOccurrence, formatDateOrdinal } from '../../../scripts/recurring.js';
 
 /**
