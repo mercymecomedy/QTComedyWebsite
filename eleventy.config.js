@@ -65,6 +65,42 @@ module.exports = function(eleventyConfig) {
     return seen;
   });
 
+  // Schema.org Event JSON-LD for the upcoming events shown on the homepage.
+  // Recurring events advertise their next occurrence date. `<` is escaped so
+  // the payload can never break out of the script tag.
+  eleventyConfig.addFilter('eventJsonLd', (events, site) => {
+    const json = JSON.stringify({
+      '@context': 'https://schema.org',
+      '@graph': (events || []).map((event) => ({
+        '@type': 'Event',
+        name: event.title,
+        startDate: event._sortDate,
+        eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+        eventStatus: 'https://schema.org/EventScheduled',
+        url: event.eventbriteLink,
+        description: `${event.eventType} at ${event.location}.`,
+        location: {
+          '@type': 'Place',
+          name: event.location,
+          address: {
+            '@type': 'PostalAddress',
+            streetAddress: event.location,
+            addressLocality: 'Denver',
+            addressRegion: 'CO',
+            addressCountry: 'US',
+          },
+        },
+        organizer: {
+          '@type': 'Organization',
+          name: site.title,
+          email: site.email,
+          url: site.url,
+        },
+      })),
+    });
+    return json.replace(/</g, '\\u003c');
+  });
+
   // Read and process events data
   eleventyConfig.addGlobalData('events', () => {
     const eventsPath = './events.json';

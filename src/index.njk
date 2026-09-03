@@ -1,6 +1,7 @@
 ---
 layout: base.njk
 title: "QTs & Cuties: A Comedy Community"
+description: "Upcoming QTs & Cuties comedy shows in Denver, CO — open mics and showcases that center queer, trans, and women performers and audiences."
 ---
 <section class="intro">
     <h1>QTs &amp; Cuties</h1>
@@ -27,3 +28,7 @@ title: "QTs & Cuties: A Comedy Community"
         {% endif %}
     </div>
 </section>
+
+{%- if events.length > 0 %}
+<script type="application/ld+json">{{ events | eventJsonLd(site) | safe }}</script>
+{%- endif %}
