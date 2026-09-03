@@ -8,8 +8,8 @@ const {
 // Recurring event helpers
 // ============================================================================
 // nextOccurrence() and formatDateOrdinal() live in scripts/recurring.js
-// (canonical, unit-tested). script.js keeps an inline browser copy; the
-// test in scripts/test-recurring.js asserts the two stay in sync.
+// (canonical, unit-tested). The browser bundle in src/assets/js/main.js
+// imports the same module; esbuild bundles it for deployment.
 
 module.exports = function(eleventyConfig) {
   // Passthrough copy for deployment metadata. Browser JS/CSS are built into
