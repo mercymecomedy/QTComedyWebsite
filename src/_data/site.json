@@ -8,6 +8,7 @@
   "url": "https://www.qtcomedy.com",
   "navigation": [
     { "label": "Home", "url": "/" },
-    { "label": "Rules", "url": "/rules/" }
+    { "label": "Rules", "url": "/rules/" },
+    { "label": "About", "url": "/about/" }
   ]
 }
