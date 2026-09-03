@@ -12,8 +12,9 @@
  *   - Cross-year rollover (December -> January)
  *   - ordinal() special cases (11th/12th/13th, 21st/22nd/23rd)
  *   - formatDateOrdinal() year-suffix behaviour
- *   - Parity: the inline copy of nextOccurrence() in script.js behaves
- *     identically to the canonical copy in scripts/recurring.js.
+ *   - Parity: the inline copy of nextOccurrence() in the browser bundle
+ *     (src/assets/js/main.js) behaves identically to the canonical copy in
+ *     scripts/recurring.js.
  */
 const fs = require('fs');
 const path = require('path');
@@ -148,7 +149,7 @@ console.log('Parity: script.js inline copy == canonical module');
 // eval it in a sandbox along with nthWeekdayOfMonth (which it calls). Run the
 // same boundary cases and compare to the canonical module.
 (function parityCheck() {
-  const src = fs.readFileSync(path.join(__dirname, '..', 'script.js'), 'utf8');
+  const src = fs.readFileSync(path.join(__dirname, '..', 'src', 'assets', 'js', 'main.js'), 'utf8');
 
   function extractFunction(name) {
     const startIdx = src.indexOf('function ' + name + '(');

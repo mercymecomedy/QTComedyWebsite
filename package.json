@@ -3,13 +3,14 @@
   "version": "1.0.0",
   "description": "QTs & Cuties Comedy Community Website",
   "scripts": {
-    "build": "eleventy && node scripts/validate-build.js",
-    "dev": "eleventy --serve",
+    "build": "node scripts/build-assets.js && eleventy && node scripts/validate-build.js",
+    "dev": "node scripts/dev.js",
     "preview": "npx serve _site",
     "test": "node scripts/test-recurring.js"
   },
   "devDependencies": {
-    "@11ty/eleventy": "^3.0.0"
+    "@11ty/eleventy": "^3.0.0",
+    "esbuild": "^0.28.2"
   },
   "engines": {
     "node": ">=18.0.0"

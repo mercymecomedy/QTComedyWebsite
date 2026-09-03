@@ -12,9 +12,8 @@ const {
 // test in scripts/test-recurring.js asserts the two stay in sync.
 
 module.exports = function(eleventyConfig) {
-  // Passthrough copy for static assets
-  eleventyConfig.addPassthroughCopy('styles.css');
-  eleventyConfig.addPassthroughCopy('script.js');
+  // Passthrough copy for deployment metadata. Browser JS/CSS are built into
+  // _site/assets/ by scripts/build-assets.js (esbuild), not passthrough-copied.
   eleventyConfig.addPassthroughCopy('CNAME');
   eleventyConfig.addPassthroughCopy('_redirects');
 
