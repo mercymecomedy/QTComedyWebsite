@@ -59,6 +59,10 @@
     </footer>
 
     {% if scripts != false %}
+    <dialog class="flyer-dialog" id="flyer-dialog" aria-label="Event flyer">
+        <button type="button" class="flyer-dialog-close" data-flyer-close aria-label="Close flyer">&times;</button>
+        <img class="flyer-dialog-img" alt="">
+    </dialog>
     <script src="/assets/main.js?v={{ buildTime }}"></script>
     {% endif %}
 </body>

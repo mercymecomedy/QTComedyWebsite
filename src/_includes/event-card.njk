@@ -2,10 +2,17 @@
 {# Single events use event.date; recurring events use event.recurring and a
    build-time-computed next date (event._nextDate). script.js recomputes the
    next date in the visitor's browser timezone and re-sorts all cards. #}
-<div class="event-card{% if event.recurring %} event-card--recurring{% endif %}"
+<div class="event-card{% if event.recurring %} event-card--recurring{% endif %}{% if event.image %} event-card--has-flyer{% endif %}"
      data-event-type="{{ event.eventType | className }}"
      data-sort-date="{{ event._sortDate }}"{% if event.recurring %}
      data-recurring='{{ event.recurring | jsonAttr | safe }}'{% endif %}>
+    {% if event.image %}
+    <button type="button" class="flyer-open" data-flyer-trigger>
+        <img src="{{ event.image }}"
+             alt="{{ event.imageAlt or (event.title + ' event flyer') }}"
+             loading="lazy" width="270" height="480">
+    </button>
+    {% endif %}
     <div class="event-title">{{ event.title }}</div>
     {% if event.recurring %}
     <div class="event-date event-date--recurring">

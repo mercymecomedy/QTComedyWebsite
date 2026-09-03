@@ -12,10 +12,12 @@ const {
 // imports the same module; esbuild bundles it for deployment.
 
 module.exports = function(eleventyConfig) {
-  // Passthrough copy for deployment metadata. Browser JS/CSS are built into
-  // _site/assets/ by scripts/build-assets.js (esbuild), not passthrough-copied.
+  // Passthrough copy for deployment metadata and event flyer images.
+  // Browser JS/CSS are built into _site/assets/ by scripts/build-assets.js
+  // (esbuild), not passthrough-copied.
   eleventyConfig.addPassthroughCopy('CNAME');
   eleventyConfig.addPassthroughCopy('_redirects');
+  eleventyConfig.addPassthroughCopy('images');
 
   // Long date format for single events: "Wednesday, September 2, 2026"
   eleventyConfig.addFilter('formatDate', (dateStr) => {
@@ -182,6 +184,18 @@ function validateEvents(events) {
       }
       if (!Number.isInteger(r.weekday) || r.weekday < 0 || r.weekday > 6) {
         throw new Error(`Event "${label}" has invalid recurring.weekday (expected 0-6, 0=Sunday)`);
+      }
+    }
+
+    // Optional flyer image (path within /images/) + alt text
+    if (Object.prototype.hasOwnProperty.call(event, 'image') && event.image != null) {
+      if (typeof event.image !== 'string' || !event.image.trim()) {
+        throw new Error(`Event "${label}" has invalid "image" (expected non-empty path string)`);
+      }
+    }
+    if (Object.prototype.hasOwnProperty.call(event, 'imageAlt') && event.imageAlt != null) {
+      if (typeof event.imageAlt !== 'string') {
+        throw new Error(`Event "${label}" has invalid "imageAlt" (expected a string)`);
       }
     }
   });

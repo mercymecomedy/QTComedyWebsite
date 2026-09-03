@@ -327,10 +327,48 @@ function downloadIcs(eventJson) {
 // Event Listeners
 // ============================================================================
 
+// ============================================================================
+// Event Flyer Lightbox
+// ============================================================================
+
+/**
+ * Wire up the flyer lightbox: clicking a card's flyer opens the full-size
+ * image in a native <dialog> (Esc closes it natively; backdrop and close
+ * button also close). No-op on pages without flyers or the dialog.
+ */
+function initFlyerLightbox() {
+  const dialog = document.getElementById('flyer-dialog');
+  if (!dialog) return;
+
+  const img = dialog.querySelector('.flyer-dialog-img');
+
+  document.querySelectorAll('[data-flyer-trigger]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const thumb = btn.querySelector('img');
+      if (!thumb || !img) return;
+      img.src = thumb.currentSrc || thumb.src;
+      img.alt = thumb.alt;
+      if (typeof dialog.showModal === 'function') {
+        dialog.showModal();
+      } else {
+        dialog.setAttribute('open', '');
+      }
+    });
+  });
+
+  dialog.addEventListener('click', (e) => {
+    if (e.target === dialog || e.target.closest('[data-flyer-close]')) {
+      if (typeof dialog.close === 'function') dialog.close();
+      else dialog.removeAttribute('open');
+    }
+  });
+}
+
 // Initialize on DOM ready
 document.addEventListener('DOMContentLoaded', () => {
   initRecurringDates();
   initFilters();
+  initFlyerLightbox();
 });
 
 // Delegated click handler for calendar buttons
