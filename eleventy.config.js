@@ -51,6 +51,18 @@ module.exports = function(eleventyConfig) {
     return str.toLowerCase().replace(/\s+/g, '-');
   });
 
+  // Distinct event types present in the events data, in first-appearance
+  // order. The homepage renders one filter button per type — e.g. a Showcase
+  // button only appears when a showcase event actually exists.
+  eleventyConfig.addFilter('eventTypes', (events) => {
+    const seen = [];
+    for (const event of events || []) {
+      const type = String(event.eventType || '').trim();
+      if (type && !seen.includes(type)) seen.push(type);
+    }
+    return seen;
+  });
+
   // Read and process events data
   eleventyConfig.addGlobalData('events', () => {
     const eventsPath = './events.json';
@@ -95,12 +107,8 @@ module.exports = function(eleventyConfig) {
   // Build timestamp for cache-busting
   eleventyConfig.addGlobalData('buildTime', () => Date.now());
 
-  // Site metadata
-  eleventyConfig.addGlobalData('site', {
-    title: 'QTs & Cuties: A Comedy Community',
-    email: 'mercymecomedy@gmail.com',
-    instagram: 'https://instagram.com/mercymecomedy'
-  });
+  // Site metadata lives in src/_data/site.json (data cascade exposes it as
+  // `site` to every template).
 
   return {
     dir: {

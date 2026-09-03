@@ -127,19 +127,21 @@ function initFilters() {
 
 /**
  * Filter events by type
- * @param {string} filterType - The filter to apply ('all', 'open-mic', 'showcase')
+ * @param {string} filterType - The filter to apply ('all' or an event type slug)
  */
 function filterEvents(filterType) {
   currentFilter = filterType;
 
-  // Update active button state
+  // Update active button state (class + ARIA toggle semantics)
   const buttons = document.querySelectorAll('.filter-btn');
   buttons.forEach(btn => {
-    if (btn.dataset.filter === filterType) {
+    const isActive = btn.dataset.filter === filterType;
+    if (isActive) {
       btn.classList.add('active');
     } else {
       btn.classList.remove('active');
     }
+    btn.setAttribute('aria-pressed', String(isActive));
   });
 
   // Show/hide event cards
@@ -161,9 +163,11 @@ function filterEvents(filterType) {
 
   if (visibleCount === 0 && filterType !== 'all') {
     if (!existingMessage) {
+      const activeBtn = document.querySelector(`.filter-btn[data-filter="${filterType}"]`);
+      const typeLabel = activeBtn ? activeBtn.textContent.trim() : filterType;
       const message = document.createElement('div');
       message.className = 'no-events no-events-filter';
-      message.textContent = `No ${filterType === 'open-mic' ? 'Open Mic' : 'Showcase'} events found.`;
+      message.textContent = `No ${typeLabel} events found.`;
       container.appendChild(message);
     }
   } else if (existingMessage) {

@@ -1,0 +1,13 @@
+{
+  "title": "QTs & Cuties: A Comedy Community",
+  "shortTitle": "QTs & Cuties",
+  "description": "QTs & Cuties is a comedy community in Denver, CO. Our shows are open to all, but particularly geared towards queer, trans, and women folks — on stage and in the audience.",
+  "email": "mercymecomedy@gmail.com",
+  "instagram": "https://instagram.com/mercymecomedy",
+  "instagramHandle": "@mercymecomedy",
+  "url": "https://www.qtcomedy.com",
+  "navigation": [
+    { "label": "Home", "url": "/" },
+    { "label": "Rules", "url": "/rules/" }
+  ]
+}
