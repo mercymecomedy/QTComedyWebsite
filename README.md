@@ -100,7 +100,15 @@ To show a flyer on a card, drop the image file (9:16 portrait works best) into t
 }
 ```
 
-`image` is optional; `imageAlt` is strongly recommended (it falls back to `"<title> event flyer"`). Visitors click the flyer to view the full image in a lightbox.
+`image` is optional; `imageAlt` is strongly recommended (it falls back to `"<title> event flyer"`).
+
+Posters often come with uneven built-in borders (e.g. an empty floor strip at the bottom). Re-center the artwork procedurally with:
+
+```sh
+scripts/center-flyer.sh images/my-show-flyer.png   # add --measure to preview
+```
+
+It requires ImageMagick and shifts the content so whitespace is equal top and bottom, recreating any padding from the poster's own edge pixels.
 
 Example event:
 
