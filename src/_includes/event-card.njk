@@ -10,7 +10,7 @@
     <button type="button" class="flyer-open" data-flyer-trigger>
         <img src="{{ event.image }}"
              alt="{{ event.imageAlt or (event.title + ' event flyer') }}"
-             loading="lazy" width="270" height="480">
+             loading="lazy">
     </button>
     {% endif %}
     <div class="event-title">{{ event.title }}</div>
