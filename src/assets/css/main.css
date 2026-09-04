@@ -1,13 +1,12 @@
 /**
  * QTs & Cuties — main stylesheet
  *
- * Design system: pride-forward, vibrant, accessible.
- * - Trans-pride core (blue/pink/white) with violet/magenta pride accents.
+ * Design system: pride-forward, vibrant, accessible, dark by default.
+ * - Trans-pride core (blue/pink/white) with a lilac accent system.
  * - Trans-stripe signature element (header underline, footer top border).
+ * - Dark plum surfaces; accent/text pairs verified for WCAG AA.
  * - Bricolage Grotesque display font (self-hosted, bundled via esbuild),
  *   system stack for body text.
- * - All color pairs meet WCAG AA (dark ink on light surfaces; white text
- *   only on AA-verified dark fills). No text-shadow crutches.
  * - Respects prefers-reduced-motion.
  */
 
@@ -15,40 +14,35 @@
    Design tokens
    ============================================================================ */
 :root {
-  /* Trans pride core */
+  /* Trans pride core (brand accents) */
   --blue: #5bcefa;
   --pink: #f5a9b8;
   --white: #ffffff;
 
-  /* Vibrant pride accents (AA with white text) */
-  --violet: #6d28d9;
-  --magenta: #be185d;
-  --sun: #f59e0b;
+  /* Lilac accent system */
+  --lilac: #c4a5fa;        /* accent text/icons on dark surfaces (AA) */
+  --lilac-bright: #d8c3ff; /* highlights + gradient stops */
+  --lilac-deep: #7b4fc9;   /* solid fills under white text (AA) */
 
-  /* Ink + surfaces */
-  --ink: #221a33;
-  --ink-soft: #55486b;
-  --paper: #ffffff;
-  --surface: rgba(255, 255, 255, 0.92);
+  /* Text + surfaces (dark theme) */
+  --ink: #f2edfb;          /* primary text */
+  --ink-soft: #c3b6dd;     /* secondary text */
+  --paper: #241b33;        /* raised dark surface */
+  --surface: rgba(38, 29, 54, 0.92);
+  --surface-deep: #130e1b; /* footer + overlays */
 
-  /* Tints for badges/chips (dark text on these = AA) */
-  --blue-tint: #e3f6fd;
-  --pink-tint: #fdeef3;
-  --violet-tint: #f1eafe;
-  --magenta-tint: #fce8f1;
-
-  --bg: #fdf8fb;
-  --border: rgba(85, 72, 107, 0.16);
+  --bg: #191322;
+  --border: rgba(196, 165, 250, 0.22);
 
   --radius-lg: 20px;
   --radius-md: 14px;
   --radius-pill: 999px;
 
-  --shadow-card: 0 10px 30px rgba(109, 40, 217, 0.10), 0 2px 8px rgba(34, 26, 51, 0.06);
-  --shadow-card-hover: 0 18px 44px rgba(109, 40, 217, 0.18), 0 4px 12px rgba(34, 26, 51, 0.08);
+  --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.35), 0 2px 8px rgba(0, 0, 0, 0.30);
+  --shadow-card-hover: 0 18px 44px rgba(0, 0, 0, 0.5), 0 0 26px rgba(196, 165, 250, 0.14);
 
   /* Signature gradients */
-  --pride-sweep: linear-gradient(120deg, var(--violet) 0%, var(--magenta) 55%, #e84393 100%);
+  --pride-sweep: linear-gradient(120deg, var(--blue) 0%, var(--lilac-bright) 50%, var(--pink) 100%);
   --trans-stripe: linear-gradient(90deg,
     var(--blue) 0 20%, var(--pink) 20% 40%, var(--white) 40% 60%,
     var(--pink) 60% 80%, var(--blue) 80% 100%);
@@ -76,8 +70,10 @@ body {
   font-family: var(--font-body);
   color: var(--ink);
   background:
-    linear-gradient(160deg, rgba(91, 206, 250, 0.14) 0%, rgba(245, 169, 184, 0.16) 45%, rgba(139, 92, 246, 0.12) 100%),
-    var(--bg);
+    radial-gradient(1100px 520px at 85% -8%, rgba(91, 206, 250, 0.10), transparent 60%),
+    radial-gradient(900px 480px at 8% 108%, rgba(245, 169, 184, 0.09), transparent 60%),
+    linear-gradient(165deg, #1e162b 0%, var(--bg) 55%, #221a31 100%);
+  background-color: var(--bg);
   min-height: 100vh;
   line-height: 1.6;
   display: flex;
@@ -112,8 +108,8 @@ h1, h2, h3 {
   left: -9999px;
   top: 0;
   z-index: 100;
-  background: var(--ink);
-  color: var(--white);
+  background: var(--lilac);
+  color: var(--paper);
   padding: 0.75rem 1.25rem;
   border-radius: 0 0 var(--radius-md) 0;
   font-weight: 700;
@@ -124,7 +120,7 @@ h1, h2, h3 {
 }
 
 :focus-visible {
-  outline: 3px solid var(--violet);
+  outline: 3px solid var(--lilac);
   outline-offset: 2px;
   border-radius: 4px;
 }
@@ -136,7 +132,7 @@ h1, h2, h3 {
   position: sticky;
   top: 0;
   z-index: 50;
-  background: var(--surface);
+  background: rgba(25, 19, 34, 0.82);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
@@ -189,12 +185,12 @@ h1, h2, h3 {
 }
 
 .nav-link:hover {
-  background: var(--violet-tint);
-  color: var(--violet);
+  background: rgba(196, 165, 250, 0.16);
+  color: var(--lilac);
 }
 
 .nav-link[aria-current='page'] {
-  background: var(--ink);
+  background: var(--lilac-deep);
   color: var(--white);
 }
 
@@ -271,14 +267,14 @@ h1, h2, h3 {
 }
 
 .filter-btn:hover {
-  border-color: var(--violet);
-  color: var(--violet);
+  border-color: var(--lilac);
+  color: var(--lilac);
 }
 
 .filter-btn.active {
   background: var(--pride-sweep);
   border-color: transparent;
-  color: var(--white);
+  color: var(--paper);
 }
 
 /* Card grid */
@@ -327,11 +323,6 @@ h1, h2, h3 {
   }
 }
 
-/* Recurring events: keep the accent bar visible + tag the card */
-.event-card--recurring::before {
-  transform: scaleX(1);
-}
-
 .stacked-card {
   margin-top: 1.5rem;
 }
@@ -361,8 +352,8 @@ h1, h2, h3 {
   display: inline-block;
   padding: 0.15rem 0.7rem;
   border-radius: var(--radius-pill);
-  background: var(--pink-tint);
-  color: #9d174d;
+  background: rgba(245, 169, 184, 0.16);
+  color: var(--pink);
   font-weight: 700;
   font-size: 0.85rem;
 }
@@ -385,18 +376,18 @@ h1, h2, h3 {
 }
 
 .event-type.open-mic {
-  background: var(--blue-tint);
-  color: #075985;
+  background: rgba(91, 206, 250, 0.14);
+  color: var(--blue);
 }
 
 .event-type.showcase {
-  background: var(--magenta-tint);
-  color: #9d174d;
+  background: rgba(245, 169, 184, 0.14);
+  color: var(--pink);
 }
 
 .event-type:not(.open-mic):not(.showcase) {
-  background: var(--violet-tint);
-  color: #5b21b6;
+  background: rgba(196, 165, 250, 0.14);
+  color: var(--lilac);
 }
 
 .event-details {
@@ -420,7 +411,7 @@ h1, h2, h3 {
 
 /* Inline links inside rules/about cards */
 .event-detail-item a {
-  color: var(--violet);
+  color: var(--lilac);
   font-weight: 600;
 }
 
@@ -449,7 +440,7 @@ h1, h2, h3 {
 @media (hover: hover) {
   .event-link:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 18px rgba(34, 26, 51, 0.22);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.45);
   }
 }
 
@@ -462,7 +453,7 @@ h1, h2, h3 {
 }
 
 .event-link.calendar {
-  background: var(--ink);
+  background: var(--lilac-deep);
 }
 
 /* Empty states */
@@ -512,7 +503,7 @@ h1, h2, h3 {
 }
 
 .flyer-dialog::backdrop {
-  background: rgba(34, 26, 51, 0.85);
+  background: rgba(10, 7, 15, 0.88);
 }
 
 .flyer-dialog-img {
@@ -530,8 +521,8 @@ h1, h2, h3 {
   height: 40px;
   border-radius: 50%;
   border: none;
-  background: var(--white);
-  color: var(--ink);
+  background: var(--lilac-bright);
+  color: var(--paper);
   font-size: 22px;
   line-height: 1;
   cursor: pointer;
@@ -546,8 +537,9 @@ h1, h2, h3 {
   bottom: 1.5rem;
   left: 50%;
   transform: translateX(-50%);
-  background: var(--ink);
-  color: var(--white);
+  background: var(--paper);
+  color: var(--ink);
+  border: 1px solid var(--lilac-deep);
   padding: 0.8rem 1.4rem;
   border-radius: var(--radius-pill);
   font-weight: 600;
@@ -571,7 +563,7 @@ h1, h2, h3 {
    Footer
    ============================================================================ */
 .site-footer {
-  background: var(--ink);
+  background: var(--surface-deep);
   color: var(--white);
   margin-top: 2rem;
   position: relative;
@@ -620,7 +612,7 @@ h1, h2, h3 {
 
 .social-link:hover {
   background: var(--white);
-  color: var(--ink);
+  color: var(--surface-deep);
   border-color: var(--white);
 }
 
