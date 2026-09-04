@@ -456,6 +456,23 @@ h1, h2, h3 {
   background: var(--lilac-deep);
 }
 
+/* Home-page event cards: center the content */
+#events-container .event-card {
+  text-align: center;
+}
+
+#events-container .event-date--recurring {
+  justify-content: center;
+}
+
+#events-container .event-details {
+  align-items: center;
+}
+
+#events-container .event-links {
+  justify-content: center;
+}
+
 /* Empty states */
 .no-events,
 .no-events-filter {
@@ -469,64 +486,19 @@ h1, h2, h3 {
 }
 
 /* ============================================================================
-   Event flyer (optional per-event image + lightbox)
+   Event flyer (optional per-event image)
    ============================================================================ */
-.flyer-open {
-  display: block;
-  width: 100%;
-  padding: 0;
-  border: none;
-  background: none;
-  cursor: zoom-in;
+.flyer {
   border-radius: var(--radius-md);
   overflow: hidden;
-}
-
-/* Full flyer at its natural aspect ratio, stacked above the event details */
-.flyer-open {
   margin-bottom: 1.1rem;
 }
 
-.flyer-open img {
+/* Full flyer at its natural aspect ratio, stacked above the event details */
+.flyer img {
   display: block;
   width: 100%;
   height: auto;
-}
-
-.flyer-dialog {
-  border: none;
-  padding: 0;
-  max-width: min(92vw, 540px);
-  max-height: 92vh;
-  background: transparent;
-  overflow: visible;
-}
-
-.flyer-dialog::backdrop {
-  background: rgba(10, 7, 15, 0.88);
-}
-
-.flyer-dialog-img {
-  display: block;
-  max-width: 100%;
-  max-height: 92vh;
-  border-radius: var(--radius-lg);
-}
-
-.flyer-dialog-close {
-  position: absolute;
-  top: -14px;
-  right: -14px;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: none;
-  background: var(--lilac-bright);
-  color: var(--paper);
-  font-size: 22px;
-  line-height: 1;
-  cursor: pointer;
-  box-shadow: var(--shadow-card);
 }
 
 /* ============================================================================
@@ -624,9 +596,16 @@ h1, h2, h3 {
     display: none;
   }
 
+  /* Stack the title above the nav so the pills sit clearly below it */
   .site-header-inner {
+    flex-direction: column;
+    gap: 0.7rem;
     justify-content: center;
     text-align: center;
+  }
+
+  .site-nav ul {
+    justify-content: center;
   }
 
   .footer-content {
