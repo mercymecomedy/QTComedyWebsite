@@ -7,11 +7,11 @@
      data-sort-date="{{ event._sortDate }}"{% if event.recurring %}
      data-recurring='{{ event.recurring | jsonAttr | safe }}'{% endif %}>
     {% if event.image %}
-    <button type="button" class="flyer-open" data-flyer-trigger>
+    <div class="flyer">
         <img src="{{ event.image }}"
              alt="{{ event.imageAlt or (event.title + ' event flyer') }}"
              loading="lazy">
-    </button>
+    </div>
     {% endif %}
     <div class="event-title">{{ event.title }}</div>
     {% if event.recurring %}
