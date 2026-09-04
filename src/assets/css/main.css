@@ -491,33 +491,15 @@ h1, h2, h3 {
   overflow: hidden;
 }
 
-/* Full flyer at its natural aspect ratio — never cropped */
+/* Full flyer at its natural aspect ratio, stacked above the event details */
+.flyer-open {
+  margin-bottom: 1.1rem;
+}
+
 .flyer-open img {
   display: block;
   width: 100%;
   height: auto;
-}
-
-/* Cards with a flyer: full flyer panel beside the details on wide screens */
-@media (min-width: 640px) {
-  .event-card--has-flyer {
-    display: grid;
-    grid-template-columns: 150px 1fr;
-    column-gap: 1.25rem;
-    align-items: start;
-  }
-
-  /* Everything but the flyer lives in column 2; the flyer spans all rows
-     (span 99 covers the implicit rows — -1 would only cover the first). */
-  .event-card--has-flyer > *:not(.flyer-open) {
-    grid-column: 2;
-  }
-
-  .event-card--has-flyer > .flyer-open {
-    grid-row: 1 / span 99;
-    grid-column: 1;
-    align-self: start;
-  }
 }
 
 .flyer-dialog {
