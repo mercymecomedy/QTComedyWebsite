@@ -1,8 +1,8 @@
 [
   {
-    "title": "QTs & Cuties @ Fiction Beer Company",
+    "title": "Fiction Beer Company",
     "recurring": {
-      "label": "1st Wednesday of the month",
+      "label": "First Wednesdays",
       "week": 1,
       "weekday": 3
     },
@@ -15,7 +15,7 @@
     "imageAlt": "QTs & Cuties open mic flyer: first Wednesdays at Fiction Beer Company, hosted by Mercy Hawkins"
   },
   {
-    "title": "QTs & Cuties @ Alamo Drafthouse (Sloans Lake)",
+    "title": "Alamo Drafthouse (Colfax)",
     "date": "2026-09-24",
     "signupTime": "6:30 PM",
     "performanceTime": "7:00 PM",
@@ -23,6 +23,6 @@
     "location": "4255 W Colfax Ave, Denver, CO 80204",
     "eventbriteLink": "https://www.eventbrite.com/e/qts-cuties-comedy-open-mic-tickets-1999322498413?aff=oddtdtcreator",
     "image": "/images/alamo-sloans-lake.jpg",
-    "imageAlt": "QTs & Cuties open mic flyer: September 24, 2026 at Alamo Drafthouse Sloans Lake, 7 PM show"
+    "imageAlt": "QTs & Cuties open mic flyer: September 24, 2026 at Alamo Drafthouse Colfax, 7 PM show"
   }
 ]

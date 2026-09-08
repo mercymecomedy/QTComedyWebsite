@@ -32,9 +32,11 @@ npm test
 | --- | --- | --- |
 | Home | `src/index.njk` | Upcoming shows, type filters, Event JSON-LD |
 | Rules | `src/rules/index.njk` | Content lives in `src/_data/rules.json` |
-| About | `src/about/index.njk` | Draft copy with `TODO:` placeholders |
+| About | `src/about/index.njk` | Draft copy; see [`CONTENT_REVIEW.md`](CONTENT_REVIEW.md) for outstanding text |
 
 Shared layout: `src/_layouts/base.njk`. Site-wide settings (title, email, Instagram, navigation, canonical URL) live in `src/_data/site.json`.
+
+Content review and draft replacement examples live in [`CONTENT_REVIEW.md`](CONTENT_REVIEW.md). Examples containing bracketed details are not intended for publication until they are confirmed.
 
 ## Repository Layout
 

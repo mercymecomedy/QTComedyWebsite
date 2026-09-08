@@ -19,8 +19,8 @@
 
 // Fonts + stylesheets are imported here so esbuild bundles everything into
 // _site/assets/main.{js,css} with a single entry point.
+import '@fontsource/comfortaa/700.css';
 import '@fontsource/bricolage-grotesque/700.css';
-import '@fontsource/bricolage-grotesque/800.css';
 import '../css/main.css';
 
 import { nextOccurrence, formatDateOrdinal } from '../../../scripts/recurring.js';
@@ -323,7 +323,7 @@ function downloadIcs(eventJson) {
   if (existing) existing.remove();
   const hint = document.createElement('span');
   hint.className = 'calendar-download-hint';
-  hint.textContent = 'Calendar file downloaded — open it to add to your calendar.';
+  hint.textContent = 'Calendar file downloaded. Open it to add to your calendar.';
   hint.setAttribute('aria-live', 'polite');
   document.body.appendChild(hint);
   setTimeout(() => hint.remove(), 4000);
