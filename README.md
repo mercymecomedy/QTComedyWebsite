@@ -1,6 +1,6 @@
 # QTs & Cuties Comedy Website
 
-Static event website for QTs & Cuties, built with [Eleventy](https://www.11ty.dev/) and deployed with Cloudflare Pages.
+Static event website for QTs & Cuties, built with [Eleventy](https://www.11ty.dev/), bundled browser assets with [esbuild](https://esbuild.github.io/), and deployed with Cloudflare Pages.
 
 ## Quick Start
 
@@ -11,13 +11,13 @@ npm ci
 npm run dev
 ```
 
-Open `http://localhost:8080` to view the development site. The server rebuilds when source files change.
+`npm run dev` starts two processes together: esbuild watches `src/assets/` and writes bundled JS/CSS/fonts into `_site/assets/`, while Eleventy serves the site at `http://localhost:8080` and rebuilds when templates or data change.
 
 Production build and local preview:
 
 ```bash
-npm run build
-npm run preview
+npm run build    # esbuild assets → Eleventy → scripts/validate-build.js
+npm run preview  # serve _site/ locally
 ```
 
 Run the recurring-event tests with:
@@ -26,18 +26,33 @@ Run the recurring-event tests with:
 npm test
 ```
 
+## Pages
+
+| Page | Source | Notes |
+| --- | --- | --- |
+| Home | `src/index.njk` | Upcoming shows, type filters, Event JSON-LD |
+| Rules | `src/rules/index.njk` | Content lives in `src/_data/rules.json` |
+| About | `src/about/index.njk` | Draft copy; see [`CONTENT_REVIEW.md`](CONTENT_REVIEW.md) for outstanding text |
+
+Shared layout: `src/_layouts/base.njk`. Site-wide settings (title, email, Instagram, navigation, canonical URL) live in `src/_data/site.json`.
+
+Content review and draft replacement examples live in [`CONTENT_REVIEW.md`](CONTENT_REVIEW.md). Examples containing bracketed details are not intended for publication until they are confirmed.
+
 ## Repository Layout
 
 | Path | Purpose |
 | --- | --- |
 | `events.json` | Event data and the primary file for event updates |
-| `src/` | Eleventy templates, layouts, and includes |
-| `styles.css` | Site styles |
-| `script.js` | Browser behavior, event filters, recurring dates, and calendar links |
-| `scripts/` | Build validation and recurring-event helpers/tests |
+| `images/` | Event flyer images, referenced from `events.json` (create as needed) |
+| `src/` | Eleventy templates, layouts, includes, and data (`_data/`) |
+| `src/assets/js/main.js` | Browser behavior (filters, recurring dates, calendar links, flyer lightbox); imports the CSS and fonts |
+| `src/assets/css/main.css` | Design system and all site styles |
+| `scripts/` | Build/dev pipeline, build validation, recurring-event helpers/tests |
 | `eleventy.config.js` | Eleventy configuration, filters, and event processing |
 | `CNAME`, `_redirects` | Cloudflare Pages deployment metadata |
 | `_site/` | Generated output; do not edit manually |
+
+Browser JS/CSS are bundled by esbuild from a single entry point (`src/assets/js/main.js` imports `main.css` and the self-hosted Bricolage Grotesque font). The recurring-date logic in `src/assets/js/main.js` is imported from the canonical `scripts/recurring.js`, so build time and browser time always agree.
 
 ## Updating Events
 
@@ -56,7 +71,9 @@ Required fields for every event:
 | `performanceTime` | `7:00 PM` |
 | `eventbriteLink` | `https://www.eventbrite.com/...` |
 
-Optional fields are `signupTime` and `facebookLink`.
+Optional fields are `signupTime`, `facebookLink`, `image`, and `imageAlt`.
+
+The homepage filter buttons are generated from the `eventType` values actually present, so a "Showcase" button only appears when a showcase event exists.
 
 ### Recurring Events
 
@@ -73,6 +90,27 @@ Use a recurring object with these fields:
 `week` is `1` through `5`, or `-1` for the last occurrence. `weekday` uses `0` for Sunday through `6` for Saturday. Months without a requested fifth weekday are skipped.
 
 Recurring cards show the human-readable label and the next occurrence. Eleventy computes a build-time fallback; browser JavaScript recalculates the date in the visitor's local timezone. Use one Eventbrite series URL for all occurrences.
+
+### Event Flyer Images
+
+To show a flyer on a card, drop the image file (9:16 portrait works best) into the root `images/` folder and reference it:
+
+```json
+{
+  "image": "/images/my-show-flyer.png",
+  "imageAlt": "Flyer for QTs & Cuties at Fiction Beer Company"
+}
+```
+
+`image` is optional; `imageAlt` is strongly recommended (it falls back to `"<title> event flyer"`).
+
+Posters often come with uneven built-in borders (e.g. an empty floor strip at the bottom). Re-center the artwork procedurally with:
+
+```sh
+scripts/center-flyer.sh images/my-show-flyer.png   # add --measure to preview
+```
+
+It requires ImageMagick and shifts the content so whitespace is equal top and bottom, recreating any padding from the poster's own edge pixels.
 
 Example event:
 
@@ -111,6 +149,6 @@ Cloudflare Pages deploys the `main` branch with these settings:
 | Root directory | Repository root (leave blank in Cloudflare) |
 | Node.js version | 18 |
 
-The build runs Eleventy and then `scripts/validate-build.js`. A successful build must include the homepage, rules page, and either event cards or the intentional empty state.
+`npm run build` bundles assets with esbuild, runs Eleventy, then `scripts/validate-build.js` — which fails the deploy if pages (home/rules/about), bundled assets and fonts, or SEO surfaces (`sitemap.xml`, `robots.txt`, Event JSON-LD) are missing.
 
 For deployment configuration details, see [`CLOUDFLARE_SETUP.md`](CLOUDFLARE_SETUP.md).

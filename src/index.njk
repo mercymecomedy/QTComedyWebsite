@@ -1,18 +1,21 @@
 ---
 layout: base.njk
 title: "QTs & Cuties: A Comedy Community"
+description: "Upcoming QTs & Cuties comedy shows in Denver, CO. Open mics and showcases that center folks who identify as queer, trans, and/or women, both on the stage and in the crowd!"
 ---
 <section class="intro">
-    <p>Join us for our regularly occurring comedy events that are open to all, but particularly geared towards those who identify as queer, trans, and/or women.</p>
+    <h1>QTs &amp; Cuties</h1>
+    <p>QTs &amp; Cuties brings Denver comedy to the stage multiple times a month! Centering performers who identify as queer, trans, and/or women, and inviting anyone that respects the space.</p>
 </section>
 
 <section class="events-section">
     <h2>Upcoming Shows</h2>
-    
-    <div class="event-filters" id="event-filters">
-        <button class="filter-btn active" data-filter="all">All</button>
-        <button class="filter-btn" data-filter="open-mic">Open Mic</button>
-        <button class="filter-btn" data-filter="showcase">Showcase</button>
+
+    <div class="event-filters" id="event-filters" role="group" aria-label="Filter events by type">
+        <button class="filter-btn active" data-filter="all" aria-pressed="true">All</button>
+        {%- for type in events | eventTypes %}
+        <button class="filter-btn" data-filter="{{ type | className }}" aria-pressed="false">{{ type }}</button>
+        {%- endfor %}
     </div>
     
     <div id="events-container" class="events-grid">
@@ -25,3 +28,7 @@ title: "QTs & Cuties: A Comedy Community"
         {% endif %}
     </div>
 </section>
+
+{%- if events.length > 0 %}
+<script type="application/ld+json">{{ events | eventJsonLd(site) | safe }}</script>
+{%- endif %}

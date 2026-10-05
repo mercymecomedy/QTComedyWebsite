@@ -1,0 +1,722 @@
+/**
+ * QTs & Cuties — main stylesheet
+ *
+ * Design system: pride-forward, vibrant, accessible, dark by default.
+ * - Trans-pride core (blue/pink/white) with a lilac accent system.
+ * - Trans-stripe signature element (header underline, footer top border).
+ * - Dark plum surfaces; accent/text pairs verified for WCAG AA.
+ * - Comfortaa display font (self-hosted, bundled via esbuild),
+ *   system stack for body text.
+ * - Respects prefers-reduced-motion.
+ */
+
+/* ============================================================================
+   Design tokens
+   ============================================================================ */
+:root {
+  /* Trans pride core (brand accents) */
+  --blue: #5bcefa;
+  --pink: #f5a9b8;
+  --white: #ffffff;
+
+  /* Lilac accent system */
+  --lilac: #c4a5fa;        /* accent text/icons on dark surfaces (AA) */
+  --lilac-bright: #d8c3ff; /* highlights + gradient stops */
+  --lilac-deep: #7b4fc9;   /* solid fills under white text (AA) */
+
+  /* Text + surfaces (dark theme) */
+  --ink: #f2edfb;          /* primary text */
+  --ink-soft: #c3b6dd;     /* secondary text */
+  --paper: #241b33;        /* raised dark surface */
+  --surface: rgba(38, 29, 54, 0.92);
+  --surface-deep: #130e1b; /* footer + overlays */
+
+  --bg: #191322;
+  --border: rgba(196, 165, 250, 0.22);
+
+  --radius-lg: 20px;
+  --radius-md: 14px;
+  --radius-pill: 999px;
+
+  --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.35), 0 2px 8px rgba(0, 0, 0, 0.30);
+  --shadow-card-hover: 0 18px 44px rgba(0, 0, 0, 0.5), 0 0 26px rgba(196, 165, 250, 0.14);
+
+  /* Signature gradients */
+  --pride-sweep: linear-gradient(120deg, var(--blue) 0%, var(--lilac-bright) 50%, var(--pink) 100%);
+  --trans-stripe: linear-gradient(90deg,
+    var(--blue) 0 20%, var(--pink) 20% 40%, var(--white) 40% 60%,
+    var(--pink) 60% 80%, var(--blue) 80% 100%);
+
+  --font-display: 'Comfortaa', 'Trebuchet MS', Verdana, sans-serif;
+  --font-pill: 'Bricolage Grotesque', 'Trebuchet MS', Verdana, sans-serif;
+  --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* ============================================================================
+   Reset + base
+   ============================================================================ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--ink);
+  background:
+    radial-gradient(1100px 520px at 85% -8%, rgba(91, 206, 250, 0.10), transparent 60%),
+    radial-gradient(900px 480px at 8% 108%, rgba(245, 169, 184, 0.09), transparent 60%),
+    linear-gradient(165deg, #1e162b 0%, var(--bg) 55%, #221a31 100%);
+  background-color: var(--bg);
+  min-height: 100vh;
+  line-height: 1.6;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
+}
+
+img {
+  max-width: 100%;
+}
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  line-height: 1.15;
+}
+
+/* ============================================================================
+   Accessibility helpers
+   ============================================================================ */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+  background: var(--lilac);
+  color: var(--paper);
+  padding: 0.75rem 1.25rem;
+  border-radius: 0 0 var(--radius-md) 0;
+  font-weight: 700;
+}
+
+.skip-link:focus {
+  left: 0;
+}
+
+:focus-visible {
+  outline: 3px solid var(--lilac);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ============================================================================
+   Header
+   ============================================================================ */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(25, 19, 34, 0.82);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* Trans-stripe signature underline */
+.site-header::after {
+  content: '';
+  display: block;
+  height: 4px;
+  background: var(--trans-stripe);
+}
+
+.site-header-inner {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 1rem;
+  padding-top: 0.9rem;
+  padding-bottom: 0.9rem;
+}
+
+.site-title {
+  display: inline-flex;
+  align-items: baseline;
+  justify-self: start;
+  gap: 0.65rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.site-title-name {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.45rem;
+  background: var(--pride-sweep);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  line-height: 1;
+}
+
+.site-title-amp {
+  color: var(--pink);
+}
+
+.site-title-tag {
+  color: var(--ink-soft);
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.site-nav {
+  list-style: none;
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.nav-link {
+  display: inline-block;
+  padding: 0.4rem 0.95rem;
+  border-radius: var(--radius-pill);
+  text-decoration: none;
+  color: var(--ink);
+  font-weight: 600;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.nav-link:hover {
+  background: rgba(196, 165, 250, 0.16);
+  color: var(--lilac);
+}
+
+.nav-link[aria-current='page'] {
+  background: var(--lilac-deep);
+  color: var(--white);
+}
+
+.header-social {
+  justify-self: end;
+}
+
+/* ============================================================================
+   Intro / hero
+   ============================================================================ */
+.intro {
+  text-align: center;
+  padding: 3.5rem 0 2.5rem;
+  max-width: 60rem;
+  margin: 0 auto;
+}
+
+.intro h1 {
+  font-size: clamp(2.5rem, 6vw, 3.9rem);
+  font-weight: 800;
+  background: var(--pride-sweep);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin-bottom: 0.35rem;
+}
+
+/* Stripe flourish under the page title */
+.intro h1::after {
+  content: '';
+  display: block;
+  width: min(180px, 60%);
+  height: 6px;
+  border-radius: var(--radius-pill);
+  background: var(--trans-stripe);
+  margin: 0.9rem auto 0;
+}
+
+.intro p {
+  font-size: clamp(1.05rem, 2vw, 1.25rem);
+  color: var(--ink-soft);
+  max-width: 44rem;
+  margin: 0 auto;
+}
+
+/* ============================================================================
+   Events section
+   ============================================================================ */
+.events-section {
+  padding-bottom: 3.5rem;
+}
+
+.events-section h2 {
+  font-size: clamp(1.7rem, 3.4vw, 2.3rem);
+  font-weight: 800;
+  margin-bottom: 1.25rem;
+}
+
+/* Filter pills */
+.event-filters {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.75rem;
+}
+
+.filter-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.95rem;
+  line-height: 1.05;
+  padding: 0.7rem 1.2rem 0.6rem;
+  border-radius: var(--radius-pill);
+  border: 2px solid var(--border);
+  background: var(--paper);
+  color: var(--ink);
+  cursor: pointer;
+  transition: transform 0.15s ease, background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.filter-btn:hover {
+  border-color: var(--lilac);
+  color: var(--lilac);
+}
+
+.filter-btn.active {
+  background: var(--pride-sweep);
+  border-color: transparent;
+  color: var(--paper);
+}
+
+/* Card grid */
+.events-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+/* ============================================================================
+   Event cards (also used by Rules + About content sections)
+   ============================================================================ */
+.event-card {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: 1.6rem;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Pride sweep accent bar, revealed on hover */
+.event-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background: var(--pride-sweep);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.25s ease;
+}
+
+@media (hover: hover) {
+  .event-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-card-hover);
+  }
+
+  .event-card:hover::before {
+    transform: scaleX(1);
+  }
+}
+
+.stacked-card {
+  margin-top: 1.5rem;
+}
+
+.event-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.35rem;
+  margin-bottom: 0.5rem;
+}
+
+.event-date {
+  color: var(--ink-soft);
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.event-date--recurring {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0.35rem;
+  margin-bottom: 0.65rem;
+}
+
+.event-recurring-label {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.65rem;
+  padding: 0.3rem 0.7rem 0.2rem;
+  border-radius: var(--radius-pill);
+  background: rgba(245, 169, 184, 0.16);
+  color: var(--pink);
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 0.85rem;
+  line-height: 1.05;
+}
+
+.event-next-date {
+  color: var(--ink-soft);
+  font-weight: 600;
+  font-size: 0.95rem;
+  line-height: 1.15;
+}
+
+.event-type {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.65rem;
+  padding: 0.35rem 0.8rem 0.25rem;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-pill);
+  font-weight: 700;
+  font-size: 0.85rem;
+  line-height: 1.05;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 1rem;
+}
+
+.event-type.open-mic {
+  background: rgba(91, 206, 250, 0.14);
+  color: var(--blue);
+}
+
+.event-type.showcase {
+  background: rgba(245, 169, 184, 0.14);
+  color: var(--pink);
+}
+
+.event-type:not(.open-mic):not(.showcase) {
+  background: rgba(196, 165, 250, 0.14);
+  color: var(--lilac);
+}
+
+.event-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  margin-bottom: 1.25rem;
+}
+
+.event-detail-item {
+  font-size: 0.98rem;
+}
+
+.event-detail-item strong {
+  color: var(--ink);
+}
+
+.event-detail-item span {
+  color: var(--ink-soft);
+}
+
+/* Inline links inside rules/about cards */
+.event-detail-item a {
+  color: var(--lilac);
+  font-weight: 600;
+}
+
+.time-separator {
+  padding: 0 0.35rem;
+}
+
+/* Event links (tickets/social/calendar) */
+.event-links {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.event-link {
+  display: inline-block;
+  padding: 0.55rem 1.2rem;
+  border-radius: var(--radius-pill);
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--white);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+@media (hover: hover) {
+  .event-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.45);
+  }
+}
+
+.event-link.eventbrite {
+  background: #c81e3a;
+}
+
+.event-link.facebook {
+  background: #1a56db;
+}
+
+.event-link.calendar {
+  background: var(--lilac-deep);
+}
+
+/* Home-page event cards: center the content */
+#events-container .event-card {
+  text-align: center;
+}
+
+#events-container .event-date--recurring {
+  justify-content: center;
+}
+
+#events-container .event-details {
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+}
+
+#events-container .event-type {
+  align-self: center;
+}
+
+#events-container .event-links {
+  justify-content: center;
+}
+
+#events-container .event-card {
+  display: flex;
+  flex-direction: column;
+}
+
+#events-container .event-links {
+  margin-top: auto;
+}
+
+/* Empty states */
+.no-events,
+.no-events-filter {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 2.5rem 1.5rem;
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-lg);
+  color: var(--ink-soft);
+  font-weight: 600;
+}
+
+/* ============================================================================
+   Event flyer (optional per-event image)
+   ============================================================================ */
+.flyer {
+  aspect-ratio: 3 / 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin-bottom: 1.1rem;
+  background: var(--surface-deep);
+}
+
+/* Keep differently sized flyers in one centered frame without cropping text. */
+.flyer img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Organizer portraits stay compact and predictable across source image sizes. */
+.about-photo {
+  width: min(100%, 18rem);
+  aspect-ratio: 4 / 5;
+  margin-inline: auto;
+}
+
+/* ============================================================================
+   Calendar download toast
+   ============================================================================ */
+.calendar-download-hint {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--paper);
+  color: var(--ink);
+  border: 1px solid var(--lilac-deep);
+  padding: 0.8rem 1.4rem;
+  border-radius: var(--radius-pill);
+  font-weight: 600;
+  box-shadow: var(--shadow-card-hover);
+  z-index: 90;
+  animation: calendar-hint-in 0.25s ease;
+}
+
+@keyframes calendar-hint-in {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* ============================================================================
+   Footer
+   ============================================================================ */
+.site-footer {
+  background: var(--surface-deep);
+  color: var(--white);
+  margin-top: 2rem;
+  position: relative;
+}
+
+/* Trans-stripe signature top border */
+.site-footer::before {
+  content: '';
+  display: block;
+  height: 4px;
+  background: var(--trans-stripe);
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
+.footer-heading {
+  font-size: 1.3rem;
+  font-weight: 800;
+}
+
+.social-links {
+  list-style: none;
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.social-link {
+  display: inline-block;
+  padding: 0.45rem 1.1rem;
+  border-radius: var(--radius-pill);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: var(--white);
+  text-decoration: none;
+  font-weight: 600;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.social-link:hover {
+  background: var(--white);
+  color: var(--surface-deep);
+  border-color: var(--white);
+}
+
+/* ============================================================================
+   Responsive
+   ============================================================================ */
+@media (max-width: 700px) {
+  .header-social {
+    display: none;
+  }
+
+  /* Stack the wordmark above the nav on narrow screens. */
+  .site-header-inner {
+    grid-template-columns: 1fr;
+    gap: 0.7rem;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .site-title,
+  .site-nav {
+    justify-self: center;
+  }
+
+  .site-nav {
+    justify-content: center;
+  }
+
+  .footer-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .events-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .event-link {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* ============================================================================
+   Reduced motion
+   ============================================================================ */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  @media (hover: hover) {
+    .event-card:hover,
+    .event-link:hover {
+      transform: none;
+    }
+  }
+}

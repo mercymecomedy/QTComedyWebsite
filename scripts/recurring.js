@@ -5,9 +5,8 @@
  *   - eleventy.config.js  (Node, at build time) via require()
  *   - scripts/test-recurring.js (unit tests)
  *
- * script.js (browser) keeps an inline copy because this project has no JS
- * bundler. scripts/test-recurring.js asserts the two copies behave
- * identically so they cannot silently drift.
+ * The browser bundle (src/assets/js/main.js) imports this module directly and
+ * esbuild bundles it for deployment — there is no second copy to drift.
  */
 
 /**

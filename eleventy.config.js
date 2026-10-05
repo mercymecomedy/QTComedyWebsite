@@ -8,15 +8,16 @@ const {
 // Recurring event helpers
 // ============================================================================
 // nextOccurrence() and formatDateOrdinal() live in scripts/recurring.js
-// (canonical, unit-tested). script.js keeps an inline browser copy; the
-// test in scripts/test-recurring.js asserts the two stay in sync.
+// (canonical, unit-tested). The browser bundle in src/assets/js/main.js
+// imports the same module; esbuild bundles it for deployment.
 
 module.exports = function(eleventyConfig) {
-  // Passthrough copy for static assets
-  eleventyConfig.addPassthroughCopy('styles.css');
-  eleventyConfig.addPassthroughCopy('script.js');
+  // Passthrough copy for deployment metadata and event flyer images.
+  // Browser JS/CSS are built into _site/assets/ by scripts/build-assets.js
+  // (esbuild), not passthrough-copied.
   eleventyConfig.addPassthroughCopy('CNAME');
   eleventyConfig.addPassthroughCopy('_redirects');
+  eleventyConfig.addPassthroughCopy('images');
 
   // Long date format for single events: "Wednesday, September 2, 2026"
   eleventyConfig.addFilter('formatDate', (dateStr) => {
@@ -50,6 +51,54 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addFilter('className', (str) => {
     if (!str) return '';
     return str.toLowerCase().replace(/\s+/g, '-');
+  });
+
+  // Distinct event types present in the events data, in first-appearance
+  // order. The homepage renders one filter button per type — e.g. a Showcase
+  // button only appears when a showcase event actually exists.
+  eleventyConfig.addFilter('eventTypes', (events) => {
+    const seen = [];
+    for (const event of events || []) {
+      const type = String(event.eventType || '').trim();
+      if (type && !seen.includes(type)) seen.push(type);
+    }
+    return seen;
+  });
+
+  // Schema.org Event JSON-LD for the upcoming events shown on the homepage.
+  // Recurring events advertise their next occurrence date. `<` is escaped so
+  // the payload can never break out of the script tag.
+  eleventyConfig.addFilter('eventJsonLd', (events, site) => {
+    const json = JSON.stringify({
+      '@context': 'https://schema.org',
+      '@graph': (events || []).map((event) => ({
+        '@type': 'Event',
+        name: event.title,
+        startDate: event._sortDate,
+        eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+        eventStatus: 'https://schema.org/EventScheduled',
+        url: event.eventbriteLink,
+        description: `${event.eventType} at ${event.location}.`,
+        location: {
+          '@type': 'Place',
+          name: event.location,
+          address: {
+            '@type': 'PostalAddress',
+            streetAddress: event.location,
+            addressLocality: 'Denver',
+            addressRegion: 'CO',
+            addressCountry: 'US',
+          },
+        },
+        organizer: {
+          '@type': 'Organization',
+          name: site.title,
+          email: site.email,
+          url: site.url,
+        },
+      })),
+    });
+    return json.replace(/</g, '\\u003c');
   });
 
   // Read and process events data
@@ -96,12 +145,8 @@ module.exports = function(eleventyConfig) {
   // Build timestamp for cache-busting
   eleventyConfig.addGlobalData('buildTime', () => Date.now());
 
-  // Site metadata
-  eleventyConfig.addGlobalData('site', {
-    title: 'QTs & Cuties: A Comedy Community',
-    email: 'mercymecomedy@gmail.com',
-    instagram: 'https://instagram.com/mercymecomedy'
-  });
+  // Site metadata lives in src/_data/site.json (data cascade exposes it as
+  // `site` to every template).
 
   return {
     dir: {
@@ -175,6 +220,18 @@ function validateEvents(events) {
       }
       if (!Number.isInteger(r.weekday) || r.weekday < 0 || r.weekday > 6) {
         throw new Error(`Event "${label}" has invalid recurring.weekday (expected 0-6, 0=Sunday)`);
+      }
+    }
+
+    // Optional flyer image (path within /images/) + alt text
+    if (Object.prototype.hasOwnProperty.call(event, 'image') && event.image != null) {
+      if (typeof event.image !== 'string' || !event.image.trim()) {
+        throw new Error(`Event "${label}" has invalid "image" (expected non-empty path string)`);
+      }
+    }
+    if (Object.prototype.hasOwnProperty.call(event, 'imageAlt') && event.imageAlt != null) {
+      if (typeof event.imageAlt !== 'string') {
+        throw new Error(`Event "${label}" has invalid "imageAlt" (expected a string)`);
       }
     }
   });

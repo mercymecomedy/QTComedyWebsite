@@ -12,100 +12,18 @@
  * build server's clock; this script overrides that with the visitor's local
  * date so the rollover happens at the visitor's midnight, not the server's.
  *
- * nextOccurrence() is the browser copy of the canonical implementation in
- * scripts/recurring.js (which eleventy.config.js requires at build time).
- * scripts/test-recurring.js asserts the two copies behave identically, so
- * they cannot silently drift.
+ * nextOccurrence() and formatDateOrdinal() are imported from the canonical
+ * implementation in scripts/recurring.js (also used by eleventy.config.js at
+ * build time) and bundled into this file by esbuild.
  */
 
-// ============================================================================
-// Recurring event helpers (duplicated in eleventy.config.js)
-// ============================================================================
+// Fonts + stylesheets are imported here so esbuild bundles everything into
+// _site/assets/main.{js,css} with a single entry point.
+import '@fontsource/comfortaa/700.css';
+import '@fontsource/bricolage-grotesque/700.css';
+import '../css/main.css';
 
-/**
- * Day of the Nth (or last) weekday in a given month.
- * @param {number} year  Full year (e.g. 2026)
- * @param {number} month 0-11
- * @param {number} week  1-5 for "Nth", -1 for "last"
- * @param {number} weekday 0-6 (0 = Sunday)
- * @returns {number} day-of-month (may exceed the month's length for week 5)
- */
-function nthWeekdayOfMonth(year, month, week, weekday) {
-  if (week === -1) {
-    const lastDay = new Date(year, month + 1, 0).getDate();
-    let d = lastDay;
-    while (new Date(year, month, d).getDay() !== weekday) d--;
-    return d;
-  }
-  const firstWeekday = new Date(year, month, 1).getDay();
-  const offset = (weekday - firstWeekday + 7) % 7;
-  return 1 + offset + (week - 1) * 7;
-}
-
-/**
- * First occurrence of a recurring spec on or after `fromDate` (local calendar
- * date compared as YYYY-MM-DD strings). Returns YYYY-MM-DD or null.
- *
- * Rollover rule: 11:59 PM on the event day -> fromDate is still that day, so
- * the event shows today. 12:01 AM the next day -> fromDate rolls forward and
- * the event jumps to next month's occurrence.
- * @param {{week:number,weekday:number}} recurring
- * @param {Date} fromDate
- * @returns {string|null}
- */
-function nextOccurrence(recurring, fromDate) {
-  const { week, weekday } = recurring;
-  const todayStr =
-    fromDate.getFullYear() + '-' +
-    String(fromDate.getMonth() + 1).padStart(2, '0') + '-' +
-    String(fromDate.getDate()).padStart(2, '0');
-
-  let y = fromDate.getFullYear();
-  let m = fromDate.getMonth();
-
-  for (let i = 0; i < 24; i++) {
-    const daysInMonth = new Date(y, m + 1, 0).getDate();
-    const day = nthWeekdayOfMonth(y, m, week, weekday);
-    if (day <= daysInMonth) {
-      const cand =
-        y + '-' +
-        String(m + 1).padStart(2, '0') + '-' +
-        String(day).padStart(2, '0');
-      if (cand >= todayStr) return cand;
-    }
-    m++;
-    if (m > 11) { m = 0; y++; }
-  }
-  return null;
-}
-
-/**
- * Ordinal suffix for a number: 1st, 2nd, 3rd, 11th, 21st, etc.
- * @param {number} n
- * @returns {string}
- */
-function ordinal(n) {
-  const s = ['th', 'st', 'nd', 'rd'];
-  const v = n % 100;
-  return n + (s[(v - 20) % 10] || s[v] || s[0]);
-}
-
-/**
- * Short ordinal format: "September 2nd". Adds ", YYYY" when the occurrence
- * year differs from refYear (defaults to this year) so cross-year dates stay
- * unambiguous.
- * @param {string} dateStr YYYY-MM-DD
- * @param {number} [refYear]
- * @returns {string}
- */
-function formatDateOrdinal(dateStr, refYear) {
-  const [y, m, d] = dateStr.split('-').map(Number);
-  const date = new Date(y, m - 1, d);
-  const monthName = date.toLocaleDateString('en-US', { month: 'long' });
-  const base = `${monthName} ${ordinal(d)}`;
-  const ref = (typeof refYear === 'number') ? refYear : new Date().getFullYear();
-  return y === ref ? base : `${base}, ${y}`;
-}
+import { nextOccurrence, formatDateOrdinal } from '../../../scripts/recurring.js';
 
 /**
  * Effective date for an event: its `date` if single, otherwise the next
@@ -215,19 +133,21 @@ function initFilters() {
 
 /**
  * Filter events by type
- * @param {string} filterType - The filter to apply ('all', 'open-mic', 'showcase')
+ * @param {string} filterType - The filter to apply ('all' or an event type slug)
  */
 function filterEvents(filterType) {
   currentFilter = filterType;
 
-  // Update active button state
+  // Update active button state (class + ARIA toggle semantics)
   const buttons = document.querySelectorAll('.filter-btn');
   buttons.forEach(btn => {
-    if (btn.dataset.filter === filterType) {
+    const isActive = btn.dataset.filter === filterType;
+    if (isActive) {
       btn.classList.add('active');
     } else {
       btn.classList.remove('active');
     }
+    btn.setAttribute('aria-pressed', String(isActive));
   });
 
   // Show/hide event cards
@@ -249,9 +169,11 @@ function filterEvents(filterType) {
 
   if (visibleCount === 0 && filterType !== 'all') {
     if (!existingMessage) {
+      const activeBtn = document.querySelector(`.filter-btn[data-filter="${filterType}"]`);
+      const typeLabel = activeBtn ? activeBtn.textContent.trim() : filterType;
       const message = document.createElement('div');
       message.className = 'no-events no-events-filter';
-      message.textContent = `No ${filterType === 'open-mic' ? 'Open Mic' : 'Showcase'} events found.`;
+      message.textContent = `No ${typeLabel} events found.`;
       container.appendChild(message);
     }
   } else if (existingMessage) {
@@ -280,6 +202,19 @@ function parseTimeString(timeStr) {
 }
 
 /**
+ * Descriptive title for exported calendar events: brand + event type + venue,
+ * e.g. "QTs & Cuties Open Mic — Alamo Drafthouse (Colfax)".
+ * @param {Object} event
+ * @returns {string}
+ */
+function calendarTitle(event) {
+  const parts = ['QTs & Cuties'];
+  if (event.eventType) parts.push(event.eventType);
+  if (event.title) parts.push(event.title);
+  return parts.join(' — ') || 'Comedy Event';
+}
+
+/**
  * Build ICS file content for an event
  * @param {Object} event - Event object with title, date, location, etc.
  * @returns {string} ICS file content
@@ -299,7 +234,7 @@ function buildIcsContent(event) {
     'T' + String(endDate.getHours()).padStart(2, '0') +
     String(endDate.getMinutes()).padStart(2, '0') + '00';
 
-  const title = (event.title || 'Comedy Event').replace(/\r?\n/g, ' ').replace(/,/g, '\\,');
+  const title = calendarTitle(event).replace(/\r?\n/g, ' ').replace(/,/g, '\\,');
   const location = (event.location || '').replace(/\r?\n/g, ' ').replace(/,/g, '\\,');
   const desc = (event.eventType ? event.eventType + '. ' : '') +
                (event.signupTime ? 'Signup: ' + event.signupTime + '. ' : '') +
@@ -353,7 +288,7 @@ function downloadIcs(eventJson) {
       };
 
       const datesParam = `${fmt(start)}/${fmt(end)}`;
-      const title = encodeURIComponent(event.title || 'Comedy Event');
+      const title = encodeURIComponent(calendarTitle(event));
       const details = encodeURIComponent(
         ((event.eventType ? event.eventType + '. ' : '') +
           (event.signupTime ? 'Signup: ' + event.signupTime + '. ' : '') +
@@ -401,7 +336,7 @@ function downloadIcs(eventJson) {
   if (existing) existing.remove();
   const hint = document.createElement('span');
   hint.className = 'calendar-download-hint';
-  hint.textContent = 'Calendar file downloaded — open it to add to your calendar.';
+  hint.textContent = 'Calendar file downloaded. Open it to add to your calendar.';
   hint.setAttribute('aria-live', 'polite');
   document.body.appendChild(hint);
   setTimeout(() => hint.remove(), 4000);

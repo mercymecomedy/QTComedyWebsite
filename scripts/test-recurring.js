@@ -12,11 +12,7 @@
  *   - Cross-year rollover (December -> January)
  *   - ordinal() special cases (11th/12th/13th, 21st/22nd/23rd)
  *   - formatDateOrdinal() year-suffix behaviour
- *   - Parity: the inline copy of nextOccurrence() in script.js behaves
- *     identically to the canonical copy in scripts/recurring.js.
  */
-const fs = require('fs');
-const path = require('path');
 const {
   nthWeekdayOfMonth,
   nextOccurrence,
@@ -140,59 +136,6 @@ eq(formatDateOrdinal('2027-01-06', 2026), 'January 6th, 2027', 'cross-year: year
   const got = formatDateOrdinal('2026-09-02');
   const expect = (2026 === thisYear) ? 'September 2nd' : 'September 2nd, 2026';
   eq(got, expect, 'no refYear defaults to current year (' + thisYear + ')');
-})();
-
-console.log('Parity: script.js inline copy == canonical module');
-
-// Extract the body of nextOccurrence() from script.js by brace-matching, then
-// eval it in a sandbox along with nthWeekdayOfMonth (which it calls). Run the
-// same boundary cases and compare to the canonical module.
-(function parityCheck() {
-  const src = fs.readFileSync(path.join(__dirname, '..', 'script.js'), 'utf8');
-
-  function extractFunction(name) {
-    const startIdx = src.indexOf('function ' + name + '(');
-    if (startIdx === -1) throw new Error('function ' + name + ' not found in script.js');
-    let i = src.indexOf('{', startIdx);
-    if (i === -1) throw new Error('no opening brace for ' + name);
-    let depth = 0;
-    const from = i;
-    for (; i < src.length; i++) {
-      const ch = src[i];
-      if (ch === '{') depth++;
-      else if (ch === '}') {
-        depth--;
-        if (depth === 0) break;
-      }
-    }
-    if (depth !== 0) throw new Error('unbalanced braces for ' + name);
-    return src.slice(startIdx, i + 1);
-  }
-
-  const sandbox = {};
-  const code =
-    extractFunction('nthWeekdayOfMonth') + '\n' +
-    extractFunction('nextOccurrence') + '\n' +
-    'this.nthWeekdayOfMonth = nthWeekdayOfMonth;\n' +
-    'this.nextOccurrence = nextOccurrence;\n';
-  // eslint-disable-next-line no-new-func
-  new Function(code).call(sandbox);
-
-  const cases = [
-    { from: '2026-09-02', expect: '2026-09-02' },
-    { from: '2026-09-03', expect: '2026-10-07' },
-    { from: '2026-09-01', expect: '2026-09-02' },
-    { from: '2026-08-18', expect: '2026-09-02' },
-    { from: '2026-12-04', expect: '2027-01-06' },
-  ];
-  for (const c of cases) {
-    withDate(c.from, (now) => {
-      const got = sandbox.nextOccurrence(firstWed, now);
-      eq(got, c.expect, 'script.js nextOccurrence(' + c.from + ') == ' + c.expect);
-      // And directly compare against the canonical module's output.
-      eq(got, nextOccurrence(firstWed, now), 'script.js == canonical for ' + c.from);
-    });
-  }
 })();
 
 console.log('\n' + passed + ' passed, ' + failed + ' failed');
