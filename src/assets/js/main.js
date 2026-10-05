@@ -202,6 +202,19 @@ function parseTimeString(timeStr) {
 }
 
 /**
+ * Descriptive title for exported calendar events: brand + event type + venue,
+ * e.g. "QTs & Cuties Open Mic — Alamo Drafthouse (Colfax)".
+ * @param {Object} event
+ * @returns {string}
+ */
+function calendarTitle(event) {
+  const parts = ['QTs & Cuties'];
+  if (event.eventType) parts.push(event.eventType);
+  if (event.title) parts.push(event.title);
+  return parts.join(' — ') || 'Comedy Event';
+}
+
+/**
  * Build ICS file content for an event
  * @param {Object} event - Event object with title, date, location, etc.
  * @returns {string} ICS file content
@@ -221,7 +234,7 @@ function buildIcsContent(event) {
     'T' + String(endDate.getHours()).padStart(2, '0') +
     String(endDate.getMinutes()).padStart(2, '0') + '00';
 
-  const title = (event.title || 'Comedy Event').replace(/\r?\n/g, ' ').replace(/,/g, '\\,');
+  const title = calendarTitle(event).replace(/\r?\n/g, ' ').replace(/,/g, '\\,');
   const location = (event.location || '').replace(/\r?\n/g, ' ').replace(/,/g, '\\,');
   const desc = (event.eventType ? event.eventType + '. ' : '') +
                (event.signupTime ? 'Signup: ' + event.signupTime + '. ' : '') +
@@ -275,7 +288,7 @@ function downloadIcs(eventJson) {
       };
 
       const datesParam = `${fmt(start)}/${fmt(end)}`;
-      const title = encodeURIComponent(event.title || 'Comedy Event');
+      const title = encodeURIComponent(calendarTitle(event));
       const details = encodeURIComponent(
         ((event.eventType ? event.eventType + '. ' : '') +
           (event.signupTime ? 'Signup: ' + event.signupTime + '. ' : '') +

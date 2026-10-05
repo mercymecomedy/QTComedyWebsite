@@ -10,19 +10,23 @@
     "performanceTime": "7:00 PM",
     "eventType": "Open Mic",
     "location": "7101 E Colfax Ave, Denver, CO 80220",
-    "eventbriteLink": "https://www.eventbrite.com/e/queerwomens-comedy-open-mic-qts-cuties-tickets-1998393235964?aff=oddtdtcreator",
+    "eventbriteLink": "https://www.eventbrite.com/e/queerwomens-comedy-open-mic-qts-cuties-tickets-1998393228943?aff=oddtdtcreator",
     "image": "/images/fiction-beer-co.jpg",
     "imageAlt": "QTs & Cuties open mic flyer: first Wednesdays at Fiction Beer Company, hosted by Mercy Hawkins"
   },
   {
     "title": "Alamo Drafthouse (Colfax)",
-    "date": "2026-09-24",
+    "recurring": {
+      "label": "Third Thursdays",
+      "week": 3,
+      "weekday": 4
+    },
     "signupTime": "6:30 PM",
     "performanceTime": "7:00 PM",
     "eventType": "Open Mic",
     "location": "4255 W Colfax Ave, Denver, CO 80204",
-    "eventbriteLink": "https://www.eventbrite.com/e/qts-cuties-comedy-open-mic-tickets-1999322498413?aff=oddtdtcreator",
-    "image": "/images/alamo-sloans-lake.jpg",
-    "imageAlt": "QTs & Cuties open mic flyer: September 24, 2026 at Alamo Drafthouse Colfax, 7 PM show"
+    "eventbriteLink": "https://www.eventbrite.com/e/queerwomens-comedy-open-mic-qts-cuties-tickets-2002925595373?aff=oddtdtcreator",
+    "image": "/images/alamo-colfax.jpg",
+    "imageAlt": "QTs & Cuties open mic flyer: third Thursdays at Alamo Drafthouse Colfax, 7 PM show"
   }
 ]
