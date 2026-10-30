@@ -28,5 +28,20 @@
     "eventbriteLink": "https://www.eventbrite.com/e/queerwomens-comedy-open-mic-qts-cuties-tickets-2002925595373?aff=oddtdtcreator",
     "image": "/images/alamo-colfax.jpg",
     "imageAlt": "QTs & Cuties open mic flyer: third Thursdays at Alamo Drafthouse Colfax, 7 PM show"
+  },
+  {
+    "title": "Wild Tulips",
+    "recurring": {
+      "label": "Second Tuesdays",
+      "week": 2,
+      "weekday": 2
+    },
+    "signupTime": "6:30 PM",
+    "performanceTime": "7:00 PM",
+    "eventType": "Open Mic",
+    "location": "1209 E 13th Ave, Denver, CO 80218",
+    "eventbriteLink": "https://www.eventbrite.com/e/queerwomens-comedy-open-mic-qts-cuties-tickets-2004107010016",
+    "image": "/images/wild-tulips.png",
+    "imageAlt": "QTs & Cuties open mic flyer: second Tuesdays at Wild Tulips, 7 PM show"
   }
 ]
